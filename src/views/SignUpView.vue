@@ -1,9 +1,10 @@
 <template>
+  <!--Start of signup-->
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-xl-10">
-        <div class="card rounded-3 text-black">
-          <div class="row g-0">
+        <div class="card text-black">
+          <div class="row">
             <div class="col-lg-6">
               <div class="card-body p-md-5 mx-md-4">
 
@@ -38,25 +39,29 @@
 
                   <div class="form-outline text-center mb-4">
                     <input type="password" id="password" class="form-control" v-model="password" />
-                    <label class="form-label" for="form2Example22"><b>Password</b></label>
+                    <label class="form-label"><b>Password</b></label>
                   </div>
 
                   <div class="form-outline text-center mb-4">
                     <input type="password" id="confirm" class="form-control" v-model="confirmPassword" />
-                    <label class="form-label" for="form2Example22"><b>Confirm Password</b></label>
+                    <label class="form-label"><b>Confirm Password</b></label>
                   </div>
 
                   <div class="text-danger text-center mb-3">
-                    {{errorMessage}}
+                    {{ errorPassword }}
                   </div>
 
                   <div class="form-outline text-center mb-4">
                     <input type="accesscode" id="access" class="form-control" v-model="accessCode" />
-                    <label class="form-label" for="form2Example22"><b>Access Code</b></label>
+                    <label class="form-label"><b>Access Code</b></label>
                   </div>
 
                   <div class="text-center pt-1 mb-5 pb-1">
                     <button class="btn btn-warning btn-block fa-lg mb-3 mx-3" type="submit"><b>Sign up</b></button>
+                  </div>
+
+                  <div class="text-center text-danger">
+                    {{ errorMessage }}
                   </div>
 
                   <div class="d-flex align-items-center justify-content-center pb-4">
@@ -81,12 +86,13 @@
       </div>
     </div>
   </div>
+  <!--End of signup-->
 </template>
 
 <script>
-
-import { getAuth, createUserWithEmailAndPassword} from 'firebase/auth'
-import {getFirestore, collection, doc, setDoc, query, where, getDocs} from 'firebase/firestore'
+// imports needed
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getFirestore, collection, doc, setDoc, query, where, getDocs } from 'firebase/firestore'
 
 export default {
   name: 'SignUpView',
@@ -98,77 +104,77 @@ export default {
       password: '',
       confirmPassword: '',
       accessCode: '',
-      errorMessage:'',
+
 
     };
   },
   methods: {
+    // using async to allow for await function inside                                                                           
     async signup() {
-
+      // check that passwords match
       if (this.password !== this.confirmPassword) {
-        this.errorMessage = 'Passwords do not match';
-
+        this.errorPassword = 'Passwords do not match';
+        // return and stop process if doesnt match
         return;
       }
 
+      //use getAuth() function
       const auth = getAuth();
 
-      try{
+      try {
 
-     const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
-     const user = userCredential.user;
+        // signup from firebase
+        const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
+        const user = userCredential.user;
+        // use getFirestore() function
+        const firestore = getFirestore();
+        // refer to groups collections
+        const groupsRef = collection(firestore, 'groups');
+        // query groups collection to see if access code entered matches dataset in groups
+        const queryResults = query(groupsRef, where('accessCode', '==', this.accessCode));
+        // gets documents using getDocs and use querySnapshot to store
+        const querySnapshot = await getDocs(queryResults);
+        // if empty no access code and need to stop signup
+        if (querySnapshot.empty) {
+          this.errorMessage = 'Invalid access code'
+          return;
+        }
+        //refer to users collections
+        const usersRef = collection(firestore, 'users');
+        const userData = {
 
-     const firestore = getFirestore();
+          firstName: this.firstName,
+          lastName: this.lastName,
+          email: this.email,
+          groupId: querySnapshot.docs[0].id
 
-     const groupsRef = collection(firestore, 'groups');
-     const q = query(groupsRef, where('accessCode', '==', this.accessCode));
-     const querySnapshot = await getDocs(q);
-
-     if (querySnapshot.empty){
-      this.errorMessage = 'Invalid access code'
-      return;
-     }
-
-     const usersRef = collection(firestore, 'users');
-     const userData = {
-
-      firstName: this.firstName,
-      lastName: this.lastName,
-      email: this.email,
-      groupId : querySnapshot.docs[0].id
-
-     };
-
-     await setDoc(doc(usersRef, user.uid), userData);
-
+        };
+        //saving userData in a new document in users with unique id
+        await setDoc(doc(usersRef, user.uid), userData);
+        //check if login worked
         console.log(user, 'has signed in');
-
+        // direct to login
         this.$router.push('/login');
-
+        // clear strings
         this.firstName = '';
-          this.lastName = '';
-          this.email = '';
-          this.password = '';
-          this.confirmPassword = '';
-          this.accessCode = '';
+        this.lastName = '';
+        this.email = '';
+        this.password = '';
+        this.confirmPassword = '';
+        this.accessCode = '';
 
-      } catch(error) {
+        // catch block for errors in signup
+      } catch (error) {
 
-    const errorCode = error.code;
-    const errorMessage = error.message;
+        const errorCode = error.code;
+        const errorMessage = error.message;
 
-    console.error('Signup error: ', errorMessage);
+        console.error('Signup error: ', errorMessage);
 
-    this.errorMessage = errorMessage;
-    this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+        this.errorCode = errorCode;
 
       }
-
-
-
-      
-
-
     },
   },
 };
@@ -186,4 +192,5 @@ export default {
 
 .logo {
   width: 100px;
-}</style>
+}
+</style>

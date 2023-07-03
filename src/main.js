@@ -4,6 +4,7 @@ import router from './router';
 import 'bootstrap/dist/css/bootstrap.css';
 import { initializeApp} from 'firebase/app'
 import 'firebase/auth'
+import '@fortawesome/fontawesome-free/css/all.css'
 
 const firebaseConfig = {
     apiKey: "AIzaSyACibJGcsqELQUEk2U3lxjsJcPRxSc6jX8",
