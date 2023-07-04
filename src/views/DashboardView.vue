@@ -20,25 +20,28 @@
         <ul>
           <li>
             <a href="#">
-              <span class="icon"><i class="fa fa-qrcode"></i></span>
-              <span class="text">Dashboard</span>
+              <span class="icon"><i class="fa-solid fa-house" style="color: #fafafa;"></i></span>
+              <span class="text"> Dashboard</span>
             </a>
           </li>
           <li>
             <a href="#">
-              <span class="icon"><i class="fa fa-qrcode"></i></span>
-              <span class="text">Link</span>
+              <span class="icon"><i class="fa-solid fa-message" style="color: #fafafa;"></i></span>
+              <span class="text"> Messenger</span>
             </a>
           </li>
           <li>
             <a href="#">
-              <span class="icon"><i class="fa fa-qrcode"></i></span>
-              <span class="text">Something else</span>
+              <span class="icon"><i class="fa-solid fa-car" style="color: #ffffff;"></i></span>
+              <span class="text"> Car Share</span>
             </a>
           </li>
         </ul>
         <div class="logout">
-          <button @click="logout">Logout</button>
+          <a href="/login">
+          <span class="icon"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></span>
+            <span class="text"> Log Out</span>
+          </a>
         </div>
       </div>
     </div>
@@ -70,12 +73,13 @@ export default {
 
 <style>
 
+
 .topbar{
   position: fixed;
   top: 0;
   left: 0;
   height: 100px;
-  background-color: darkcyan;
+  background-color: #1d546f;
   display: flex;
   align-items: center;
   width: 100%;
@@ -117,19 +121,23 @@ export default {
   left: 0;
   width: 250px;
   height: 100%;
-  background-color: cyan;
+  height: calc(100% - 100px);
+  background-color: #039be5;
   transition: width 0.2s;
+  overflow-y: auto;
 }
 
 .sidebar_container{
   display: flex;
   flex-direction: column;
+  height: 100%;
+ 
 }
 
 
 .click_collapse .sidebar{
   width: 100px;
-  padding-right: 20px;
+  
   
 }
 
@@ -137,28 +145,77 @@ export default {
   display: none;
 }
 
+.click_collapse .sidebar .logout a .text{
+  display: none;
+}
+
+.sidebar ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  
+}
+
 .sidebar ul li a{
   display: block;
-  padding: 16px 25px;
-  border-bottom: 1px solid #409f9d;
+  padding: 40px 25px;
+  border-bottom: 1px solid black;
+  text-decoration: none;
+  color: white;
+  transition: black 0.3s;
+}
+
+
+.sidebar ul li a .icon{
+  font-size: 18px;
+  color: white;
+  vertical-align: middle;
+}
+
+.sidebar ul li a .text{
+  margin-left: 19px;
+  color: white;
+  font-family: sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.sidebar ul li a:hover{
+  background: navy;
+  color: white;
 }
 
 .logout{
   margin-top: auto;
+}
+
+
+.logout a {
+  display: flex;
+  align-items: center;
   padding: 16px 25px;
-  text-align: center;
+  text-decoration: none;
+  color: white;
+  transition: background-color 0.3s;
+  
 }
 
-.logout button{
-  padding: 8px 16px;
-  border: none;
-  cursor: pointer
+.logout a:hover {
+  background-color: navy;
 }
 
+.logout a .icon {
+  font-size: 18px;
+  color: white;
+}
 
-
-
-
+.logout a .text {
+  margin-left: 19px;
+  color: white;
+  font-family: sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
 
 </style>
   
