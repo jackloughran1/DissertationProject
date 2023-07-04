@@ -95,6 +95,8 @@ export default {
         //check for signin
         console.log(user, 'has signed in');
 
+        this.$router.push('/');
+
 
 
       } catch (error) {

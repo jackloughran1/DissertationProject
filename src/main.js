@@ -6,6 +6,7 @@ import { initializeApp} from 'firebase/app'
 import 'firebase/auth'
 import '@fortawesome/fontawesome-free/css/all.css'
 
+
 const firebaseConfig = {
     apiKey: "AIzaSyACibJGcsqELQUEk2U3lxjsJcPRxSc6jX8",
     authDomain: "dissertation-5d2f3.firebaseapp.com",
