@@ -127,11 +127,11 @@ export default {
         const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
         const user = userCredential.user;
         // use getFirestore() function
-        const firestore = getFirestore();
+        const db = getFirestore();
         // refer to groups collections
-        const groupsRef = collection(firestore, 'groups');
+        const groupsCollection = collection(db, 'groups');
         // query groups collection to see if access code entered matches dataset in groups
-        const queryResults = query(groupsRef, where('accessCode', '==', this.accessCode));
+        const queryResults = query(groupsCollection, where('accessCode', '==', this.accessCode));
         // gets documents using getDocs and use querySnapshot to store
         const querySnapshot = await getDocs(queryResults);
         // if empty no access code and need to stop signup
@@ -140,7 +140,7 @@ export default {
           return;
         }
         //refer to users collections
-        const usersRef = collection(firestore, 'users');
+        const usersCollection = collection(db, 'users');
         const userData = {
 
           firstName: this.firstName,
@@ -150,7 +150,7 @@ export default {
 
         };
         //saving userData in a new document in users with unique id
-        await setDoc(doc(usersRef, user.uid), userData);
+        await setDoc(doc(usersCollection, user.uid), userData);
         //check if login worked
         console.log(user, 'has signed in');
         // direct to login

@@ -13,10 +13,18 @@
           <i class="fas fa-bars"></i>
         </div>
       </div>
+      <div class="userProfile ms-auto">
+        <span class="notification"> <i class="fa-solid fa-bell fa-xl px-4" style="color: #ffffff;"> </i> </span>
+        <span class="text px-2">{{ notificationCounter }}</span>
+       <span class="icon"> <i class="fa-solid fa-user fa-xl px-2" style="color: #ffffff;"></i></span>
+       <span class="text px-2">{{ firstName+' '+lastName }}</span>
+        
+      </div>
+      
     </div>
 
     <div class="container" :class="{ click_collapse: sidebarCollapsed }">
-      <h1 class="text-center my-4">User's Calendar</h1>
+      <h1 class="text-center my-4">{{ firstName }}'s Calendar View</h1>
       <div id="calendar"></div>
     </div>
 
@@ -33,7 +41,7 @@
           <li>
             <a href="#">
               <span class="icon"><i class="fa-solid fa-message" style="color: #fafafa;"></i></span>
-              <span class="text">Messenger</span>
+              <span class="text">Messenger Forum</span>
             </a>
           </li>
           <li>
@@ -42,6 +50,7 @@
               <span class="text">Car Share</span>
             </a>
           </li>
+          
         </ul>
         <div class="logout">
           <a href="/login">
@@ -56,11 +65,13 @@
 </template>
 
 <script>
+// imports
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { signOut, getAuth } from 'firebase/auth';
+import { getFirestore, collection, onSnapshot, doc } from 'firebase/firestore';
 
 export default {
   name: 'DashboardView',
@@ -68,18 +79,26 @@ export default {
   data() {
     return {
       sidebarCollapsed: false,
+      // storage for events
+      events: [],
+      firstName: '',
+      lastName: '',
+      notificationCounter: 0
     };
   },
   computed: {
+    // ternary operator if true/false
     sidebarWidth() {
       return this.sidebarCollapsed ? '0' : '250px';
     },
   },
   methods: {
     toggleSidebar() {
+      // toggle the sidebar
       this.sidebarCollapsed = !this.sidebarCollapsed;
     },
 
+    // logout method
     logout() {
       const auth = getAuth();
       signOut(auth)
@@ -92,19 +111,79 @@ export default {
         })
     }
   },
-  mounted() {
+  // vue lifecycle hook - used for fullcalendar
+  mounted() { 
+    
+    // pullig user data to dunamically populate dashboard
+    const db = getFirestore();
+    const auth = getAuth();
+    const currentUser = auth.currentUser.uid;
+
+  
+
+    const userCollection = collection(db, 'users');
+    const userDocRef = doc(userCollection, currentUser);
+
+    onSnapshot(userDocRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const user = snapshot.data();
+        this.firstName = user.firstName; 
+        this.lastName = user.lastName;
+        
+      } else {
+        console.log('User document does not exist');
+      }
+    });
+
+ 
+
     const calendarEl = document.getElementById('calendar');
     const calendar = new Calendar(calendarEl, {
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: 'timeGridWeek',
       nowIndicator: true,
+      selectable: true,
       headerToolbar: {
         left: 'prev,next',
         center: 'title',
         right: 'timeGridWeek,timeGridDay'
-      }
+      },
+
+      events: this.events,
     });
     calendar.render();
+    // pulling event data from firestore
+  
+
+    const eventsCollection = collection(db, 'events');
+
+    onSnapshot(eventsCollection, (snapshot) => {
+
+      const changes = snapshot.docChanges();
+  const addedEvents = changes.filter((change) => change.type === 'added');
+  const modifiedEvents = changes.filter((change) => change.type === 'modified');
+  const removedEvents = changes.filter((change) => change.type === 'removed');
+
+  this.notificationCounter += addedEvents.length + modifiedEvents.length+ removedEvents.length;
+      const events = snapshot.docs.map((event) => {
+        const eventData = event.data();
+        return {
+          title: eventData.eventName,
+          start: eventData.timeStamp.toDate(),
+          location: eventData.location,
+          groupId: eventData.groupId,
+        };
+      });
+
+      this.events = events;
+      calendar.setOption('events', events);
+      // console.log(events);
+    });
+
+    if (this.events.length === 0) {
+      this.errorMessage = 'No events found';
+      return;
+    }
   },
 };
 </script>
@@ -156,6 +235,7 @@ export default {
   transition: width 0.2s;
   overflow-y: auto;
   width: 250px;
+  z-index: 101;
 }
 
 .sidebar_container {
@@ -230,24 +310,7 @@ export default {
   padding: 20px;
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 0;
-  }
 
-  .sidebar ul li a .text {
-    display: none;
-  }
-
-  .sidebar .logout a .text {
-    display: none;
-  }
-
-  .click_collapse .container {
-    margin-left: 0;
-  }
-}
 
 /*Calendar-styling */
 /* Calendar container */
@@ -298,6 +361,17 @@ export default {
 }
 
 .fc-event:hover {
-  background-color: #007dc3;
+  background-color: #0d97d2;
 }
+
+.userProfile{
+  color: white;
+  font-family: sans-serif;
+  font-size: 16px;
+}
+
+.userProfile:hover{
+  color: rgb(24, 124, 216);
+}
+
 </style>
