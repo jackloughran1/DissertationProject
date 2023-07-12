@@ -72,6 +72,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 
 export default {
+  name: 'LoginView',
   data() {
     return {
       email: '',

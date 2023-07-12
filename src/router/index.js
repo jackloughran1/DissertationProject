@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import DashboardView from '@/views/DashboardView.vue';
 import SignUpView from '@/views/SignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
+import SchedularView from '@/views/SchedularView.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 
@@ -34,6 +35,13 @@ const routes = [
     name: 'Login',
     component: LoginView,
   },
+  {
+    path: '/schedular',
+    name: 'schedular',
+    component : SchedularView,
+    meta: {requiresAuth:true}, 
+    beforeEnter: requiresAuth
+  }
 ];
 
 const router = createRouter({
