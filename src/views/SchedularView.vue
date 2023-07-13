@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import TopbarComponent from './TopbarComponent.vue';
-import SidebarComponent from './SidebarComponent.vue';
+import TopbarComponent from '../components/TopbarComponent.vue';
+import SidebarComponent from '../components/SidebarComponent.vue';
 
 export default{
     name: 'SchedularView',

@@ -1,47 +1,40 @@
 <template>
-    <div class="topbar">
-      <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <div class="topbar">
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
         <path
           d="M16 1a14.86 14.86 0 0 0-9.33 3.26L6 4.83V2a1 1 0 0 0-2 0v5a1 1 0 0 0 1 1h5a1 1 0 0 0 0-2H7.71l.23-.2A12.86 12.86 0 0 1 16 3 13 13 0 1 1 3 16a1 1 0 0 0-2 0A15 15 0 1 0 16 1z"
           style="fill:#039be5" />
         <path d="m19.79 21.21-4.5-4.5A1 1 0 0 1 15 16V7a1 1 0 0 1 2 0v8.59l4.21 4.2a1 1 0 0 1-1.42 1.42z"
           style="fill:#ff9a03" />
       </svg>
-      <div class="menu">
-        <div class="hamburger" @click="emitToggleSidebar">
-          <i class="fas fa-bars"></i>
-        </div>
+    <div class="menu">
+      <div class="hamburger" @click="$emit('toggle-sidebar')">
+        <i class="fas fa-bars"></i>
       </div>
-      <div class="userProfile ms-auto">
-        <span class="notification"> <i class="fa-solid fa-bell fa-xl px-4" style="color: #ffffff;"> </i> </span>
-      <!--<span class="text px-2">{{ notificationCounter }}</span>-->  
-        <span class="icon"> <i class="fa-solid fa-user fa-xl px-2" style="color: #ffffff;"></i></span>
-        <span class="text px-2">{{ firstName + ' ' + lastName }}</span>
-
-      </div>
-
     </div>
+    <div class="userProfile ms-auto">
+      <span class="notification"> <i class="fa-solid fa-bell fa-xl px-4" style="color: #ffffff;"> </i> </span>
+      <span class="icon"> <i class="fa-solid fa-user fa-xl px-2" style="color: #ffffff;"></i></span>
+      <span class="text px-2">{{ fullName }}</span>
+    </div>
+  </div>
 </template>
 
 <script>
-export default{
-    name: 'TopbarComponent',
-
-    props:{
-      
-        firstName: String,
-        lastName: String
-    },
-
-    methods:{
-        emitToggleSidebar(){
-            this.$emit('toggle-sidebar');
-        }
-    }
-}
 
 
+export default {
+name: 'TopbarComponent',
+computed: {
 
+},
+methods: {
+  emitToggleSidebar() {
+    this.$emit('toggle-sidebar');
+  },
+},
+
+};
 </script>
 
 

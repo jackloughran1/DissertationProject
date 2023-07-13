@@ -4,7 +4,7 @@
       <div class="sidebar_container">
         <ul>
           <li>
-            <a href="#">
+            <a href="/">
               <span class="icon"><i class="fa-solid fa-house" style="color: #fafafa;"></i></span>
               <span class="text">Dashboard</span>
             </a>
@@ -48,13 +48,8 @@ export default{
 
     props:{
         isManager:Boolean,
+        sidebarCollapsed: Boolean
     },
-
-    data(){
-        return{
-            sidebarCollapsed: false
-        };
-    }, 
 
     computed: {
     // ternary operator if true/false
@@ -62,16 +57,12 @@ export default{
       return this.sidebarCollapsed ? '0' : '250px';
     },
   },
-  methods: {
-    toggleSidebar() {
-      // toggle the sidebar
-      this.sidebarCollapsed = !this.sidebarCollapsed;
-    },
+
     emitLogout(){
         this.$emit('logout');
     },
-},
 }
+
 
 
 
