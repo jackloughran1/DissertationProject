@@ -63,9 +63,6 @@ export default{
     },
 }
 
-
-
-
 </script>
 
 <style>

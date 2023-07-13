@@ -18,12 +18,12 @@
 // imports
 import SidebarComponent from '../components/SidebarComponent.vue';
 import TopbarComponent from '../components/TopbarComponent.vue';
-// import { Calendar } from '@fullcalendar/core';
-// import dayGridPlugin from '@fullcalendar/daygrid';
-// import timeGridPlugin from '@fullcalendar/timegrid';
-// import interactionPlugin from '@fullcalendar/interaction';
-// import { signOut, getAuth } from 'firebase/auth';
-// import { getFirestore, collection, onSnapshot, doc, where, query } from 'firebase/firestore';
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { signOut, getAuth } from 'firebase/auth';
+import { getFirestore, collection, onSnapshot, doc, where, query } from 'firebase/firestore';
 
 
 export default {
@@ -37,12 +37,12 @@ export default {
     data() {
         return {
             sidebarCollapsed: false,
-            // // storage for events
-            // events: [],
-            // firstName: "",
-            // lastName: "",
-            // isManager: false,
-            // notificationCounter: 0
+            // storage for events
+            events: [],
+            firstName: "",
+            lastName: "",
+            isManager: false,
+           
         };
     },
     computed: {
@@ -50,89 +50,89 @@ export default {
         sidebarWidth() {
             return this.sidebarCollapsed ? "0" : "250px";
         },
-
-        // // logout method
-        // logout() {
-        //     const auth = getAuth();
-        //     signOut(auth)
-        //         .then(() => {
-        //         console.log("User has logged out!!");
-        //         this.$router.push("/login");
-        //     })
-        //         .catch((error) => {
-        //         console.log(error);
-        //     });
-        // },
     },
 
     methods: {
       toggleSidebar(collapsed) {
     this.sidebarCollapsed = collapsed;
   },
-    }
-    // vue lifecycle hook - used for fullcalendar
-    // mounted() {
-    //     console.log("Component mounted");
-    //     // pullig user data to dunamically populate dashboard
-    //     const db = getFirestore();
-    //     const auth = getAuth();
-    //     const currentUser = auth.currentUser.uid;
-    //     const userCollection = collection(db, "users");
-    //     const userDocRef = doc(userCollection, currentUser);
-    //     const calendarEl = document.getElementById("calendar");
-    //     const calendar = new Calendar(calendarEl, {
-    //         plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-    //         initialView: "timeGridWeek",
-    //         nowIndicator: true,
-    //         selectable: true,
-    //         headerToolbar: {
-    //             left: "prev,next",
-    //             center: "title",
-    //             right: "timeGridWeek,timeGridDay"
-    //         },
-    //         events: this.events,
-    //     });
-    //     calendar.render();
-    //     //loading  logged in user's name
-    //     onSnapshot(userDocRef, (snapshot) => {
-    //         if (snapshot.exists()) {
-    //             const user = snapshot.data();
-    //             this.firstName = user.firstName;
-    //             this.lastName = user.lastName;
-    //             // check for manager role
-    //             this.isManager = user.role === "manager";
-    //             console.log(snapshot.data());
-    //             console.log(currentUser);
-    //             // pulling event data from firestore
-    //             const eventsCollection = collection(db, "events");
-    //             const groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
-    //             onSnapshot(groupQuery, (snapshot) => {
-    //                 const events = snapshot.docs.map((event) => {
-    //                     const eventData = event.data();
-    //                     return {
-    //                         title: eventData.eventName,
-    //                         start: eventData.timeStamp.toDate(),
-    //                         end: eventData.timeStamp.toDate(),
-    //                         location: eventData.location,
-    //                         groupId: eventData.groupId,
-    //                     };
-    //                 });
-    //                 this.events = events;
-    //                 calendar.setOption("events", events);
-    //                 console.log("Events:", events);
-    //             });
-    //             // if (this.events.length===0){
-    //             //   console.log('No events found');
-    //             // //   return;
-    //             // }
-    //         }
-    //         else {
-    //             console.log("User Document does not exist");
-    //             console.log(currentUser);
-    //             console.log(snapshot.data());
-    //         }
-    //     });
-    // },
+
+  // logout method
+  logout() {
+            const auth = getAuth();
+            signOut(auth)
+                .then(() => {
+                console.log("User has logged out!!");
+                this.$router.push("/login");
+            })
+                .catch((error) => {
+                console.log(error);
+            });
+        },
+    },
+   // vue lifecycle hook - used for fullcalendar
+    mounted() {
+        console.log("Component mounted");
+        // pullig user data to dunamically populate dashboard
+        const db = getFirestore();
+        const auth = getAuth();
+        const currentUser = auth.currentUser.uid;
+        const userCollection = collection(db, "users");
+        const userDocRef = doc(userCollection, currentUser);
+        const calendarEl = document.getElementById("calendar");
+        const calendar = new Calendar(calendarEl, {
+            plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+            initialView: "timeGridWeek",
+            nowIndicator: true,
+            selectable: true,
+            headerToolbar: {
+                left: "prev,next",
+                center: "title",
+                right: "timeGridWeek,timeGridDay"
+            },
+            events: this.events,
+        });
+        calendar.render();        //loading  logged in user's name
+        onSnapshot(userDocRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const user = snapshot.data();
+                this.firstName = user.firstName;
+                this.lastName = user.lastName;
+                // check for manager role
+                this.isManager = user.role === "manager";
+                console.log(snapshot.data());
+                console.log(currentUser);
+                // pulling event data from firestore
+                const eventsCollection = collection(db, "events");
+                const groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
+                onSnapshot(groupQuery, (snapshot) => {
+                    const events = snapshot.docs.map((event) => {
+                        const eventData = event.data();
+                        return {
+                            title: eventData.eventName,
+                            start: eventData.timeStamp.toDate(),
+                            end: eventData.timeStamp.toDate(),
+                            location: eventData.location,
+                            groupId: eventData.groupId,
+                        };
+                    });
+                    this.events = events;
+                    calendar.setOption("events", events);
+                    console.log("Events:", events);
+                });
+                // if (this.events.length===0){
+                //   console.log('No events found');
+                // //   return;
+                // }
+            }
+            else {
+                console.log("User Document does not exist");
+                console.log(currentUser);
+                console.log(snapshot.data());
+            }
+        });
+    },
+
    
 }
     
