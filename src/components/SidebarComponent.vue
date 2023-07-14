@@ -1,5 +1,5 @@
 <template>
-
+<!--Sidebar-->
 <div class="sidebar" :style="{ width: sidebarWidth }">
       <div class="sidebar_container">
         <ul>
@@ -53,7 +53,7 @@ export default{
     },
 
     computed: {
-
+// uses state on logged in user in v-if
       isManager() {
       return this.$store.state.userData.isManager;
         
@@ -67,7 +67,7 @@ export default{
     emitLogout(){
         this.$emit('logout');
     },
-
+// calling the fetch user data method for ifManager
     methods: {
       fetchUserData(){
         this.$store.dispatch('fetchUserData');

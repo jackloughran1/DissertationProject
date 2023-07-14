@@ -6,7 +6,7 @@ import SchedularView from '@/views/SchedularView.vue'
 import { getAuth } from 'firebase/auth';
 import store from '../store/store.js'
 
-
+// requires auth in route
 function requiresAuth(to, from, next){
   const auth = getAuth();
   const user = auth.currentUser;
@@ -51,6 +51,7 @@ const router = createRouter({
   routes,
 });
 
+// route guard
 router.beforeEach((to, from, next)=>{
   
   const authToken = store.state.authToken;

@@ -95,7 +95,7 @@ export default {
         const userCredential = await signInWithEmailAndPassword(auth, email, password)
         const user = userCredential.user;
         //check for signin
-        console.log(user, 'has signed in');
+        // console.log(user, 'has signed in');
 
         this.$store.dispatch('setAuthToken', user.accessToken);
 

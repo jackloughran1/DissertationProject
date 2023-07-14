@@ -88,8 +88,8 @@ export default {
                 this.lastName = user.lastName;
                 // check for manager role
                 this.isManager = user.role === "manager";
-                console.log(snapshot.data());
-                console.log(currentUser);
+                // console.log(snapshot.data());
+                // console.log(currentUser);
                 // pulling event data from firestore
                 const eventsCollection = collection(db, "events");
                 const groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
@@ -106,7 +106,7 @@ export default {
                     });
                     this.events = events;
                     calendar.setOption("events", events);
-                    console.log("Events:", events);
+                    // console.log("Events:", events);
                 });
                 // if (this.events.length===0){
                 //   console.log('No events found');
@@ -115,8 +115,7 @@ export default {
             }
             else {
                 console.log("User Document does not exist");
-                console.log(currentUser);
-                console.log(snapshot.data());
+                
             }
         });
     },

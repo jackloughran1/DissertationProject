@@ -2,7 +2,7 @@ import { createStore } from 'vuex'
 import { getFirestore, doc, onSnapshot, collection } from 'firebase/firestore';
 import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth';
 
-
+// defining state of userData and auth token, auth token used for persistence
 const store = createStore({
   state: {
     userData: {
@@ -28,7 +28,7 @@ const store = createStore({
   },
   actions: {
 
-
+// userData method
    async fetchUserData({ commit }) {
       const db = getFirestore();
       const auth = getAuth();

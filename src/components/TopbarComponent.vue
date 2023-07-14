@@ -27,7 +27,7 @@ export default {
 
 name: 'TopbarComponent',
 computed: {
-
+// getting userData
   ...mapState({
     userData: (state)=> state.userData,
   }),

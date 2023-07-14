@@ -152,7 +152,7 @@ export default {
         //saving userData in a new document in users with unique id
         await setDoc(doc(usersCollection, user.uid), userData);
         //check if login worked
-        console.log(user, 'has signed in');
+        // console.log(user, 'has signed in');
         // direct to login
         this.$router.push('/login');
         // clear strings
