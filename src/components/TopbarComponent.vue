@@ -21,11 +21,20 @@
 </template>
 
 <script>
-
+import {mapState} from 'vuex'
 
 export default {
+
 name: 'TopbarComponent',
 computed: {
+
+  ...mapState({
+    userData: (state)=> state.userData,
+  }),
+
+  fullName(){
+    return `${this.userData.firstName} ${this.userData.lastName}`;
+  }
 
 },
 methods: {

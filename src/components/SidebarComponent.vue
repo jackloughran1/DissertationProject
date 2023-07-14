@@ -21,8 +21,8 @@
               <span class="text">Car Share (if time)</span>
             </a>
           </li>
-          <li v-if="isManager">
-            <a href="/schedular">
+          <li>
+            <a href="/schedular" v-if="isManager">
               <span class="icon"><i class="fa-solid fa-calendar-plus" style="color: #ffffff;"></i></span>
               <span class="text">Schedular</span>
             </a>
@@ -32,7 +32,7 @@
         <div class="logout">
           <a href="/login">
             <span class="icon"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></span>
-            <span class="text"><button @click='emitLogout' style="border: none; background: none; color: white;">Log
+            <span class="text"><button  @logout="logout" style="border: none; background: none; color: white;">Log
                 Out</button></span>
           </a>
         </div>
@@ -43,15 +43,21 @@
 </template>
 
 <script>
+import {getAuth, signOut} from 'firebase/auth'
 export default{
     name: 'SidebarComponent',
 
     props:{
-        isManager:Boolean,
+        
         sidebarCollapsed: Boolean
     },
 
     computed: {
+
+      isManager() {
+      return this.$store.state.userData.isManager;
+        
+      },
     // ternary operator if true/false
     sidebarWidth() {
       return this.sidebarCollapsed ? '0' : '250px';
@@ -61,6 +67,27 @@ export default{
     emitLogout(){
         this.$emit('logout');
     },
+
+    methods: {
+      fetchUserData(){
+        this.$store.dispatch('fetchUserData');
+      },
+        // logout method
+  logout() {
+            const auth = getAuth();
+            signOut(auth)
+                .then(() => {
+                console.log("User has logged out!!");
+                this.$router.push("/login");
+            })
+                .catch((error) => {
+                console.log(error);
+            });
+        },
+    },
+    created() {
+      this.fetchUserData();
+    }
 }
 
 </script>

@@ -1,22 +1,35 @@
 import { createStore } from 'vuex'
 import { getFirestore, doc, onSnapshot, collection } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth';
+
 
 const store = createStore({
   state: {
     userData: {
       firstName: '',
       lastName: '',
+      isManager: false
+      
     },
+    authToken: '',
   },
-  getters: {},
+  getters: {
+    authToken: (state) => state.authToken
+  },
   mutations: {
     setUserData(state, userData) {
+      
       state.userData = userData;
     },
+    setAuthToken(state, authToken){
+      state.authToken=authToken;
+    }
+    
   },
   actions: {
-    fetchUserData({ commit }) {
+
+
+   async fetchUserData({ commit }) {
       const db = getFirestore();
       const auth = getAuth();
       const currentUser = auth.currentUser.uid;
@@ -29,9 +42,28 @@ const store = createStore({
           commit('setUserData', {
             firstName: user.firstName,
             lastName: user.lastName,
+            isManager: user.role === 'manager',
+            
           });
+          
         }
       });
+    },
+    async setAuthToken({ commit }, authToken) {
+      commit('setAuthToken', authToken);
+
+      // Save auth token to local storage
+      localStorage.setItem('authToken', authToken);
+    },
+    async initializeAuth({ dispatch }) {
+      const auth = getAuth();
+      const persistedAuthToken = localStorage.getItem('authToken');
+
+      if (persistedAuthToken) {
+        // Set persistence to browser session
+        await setPersistence(auth, browserSessionPersistence);
+        dispatch('setAuthToken', persistedAuthToken);
+      }
     },
   },
 });

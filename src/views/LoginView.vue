@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 
 
 export default {
@@ -88,13 +88,18 @@ export default {
 
 
       try {
+
+
         // firebase authentication
         const auth = getAuth();
         const userCredential = await signInWithEmailAndPassword(auth, email, password)
-
         const user = userCredential.user;
         //check for signin
         console.log(user, 'has signed in');
+
+        this.$store.dispatch('setAuthToken', user.accessToken);
+
+        localStorage.setItem('authToken', user.accessToken)
 
         this.$router.push('/');
 

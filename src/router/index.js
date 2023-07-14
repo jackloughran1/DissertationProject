@@ -4,6 +4,7 @@ import SignUpView from '@/views/SignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
 import SchedularView from '@/views/SchedularView.vue'
 import { getAuth } from 'firebase/auth';
+import store from '../store/store.js'
 
 
 function requiresAuth(to, from, next){
@@ -49,6 +50,17 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+router.beforeEach((to, from, next)=>{
+  
+  const authToken = store.state.authToken;
+
+  if (!authToken && to.meta.requiresAuth) {
+    next('/login');
+  } else {
+    next();
+  }
+  })
 
 
 

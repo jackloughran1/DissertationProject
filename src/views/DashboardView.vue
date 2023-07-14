@@ -2,7 +2,7 @@
   <div>
     <TopbarComponent :firstName="firstName" :lastName="lastName" @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
     <div class="wrapper" :class="{ click_collapse: sidebarCollapsed }">
-      <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" @logout="logout" />
+      <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed"/>
       <div class="container" :class="{ click_collapse: sidebarCollapsed }">
         <!-- Content area -->
         <h1 class="text-center my-4">{{ firstName }}'s Calendar View</h1>
@@ -22,7 +22,7 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { signOut, getAuth } from 'firebase/auth';
+import {  getAuth } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, doc, where, query } from 'firebase/firestore';
 
 
@@ -57,22 +57,10 @@ export default {
     this.sidebarCollapsed = collapsed;
   },
 
-  // logout method
-  logout() {
-            const auth = getAuth();
-            signOut(auth)
-                .then(() => {
-                console.log("User has logged out!!");
-                this.$router.push("/login");
-            })
-                .catch((error) => {
-                console.log(error);
-            });
-        },
     },
    // vue lifecycle hook - used for fullcalendar
     mounted() {
-        console.log("Component mounted");
+       
         // pullig user data to dunamically populate dashboard
         const db = getFirestore();
         const auth = getAuth();

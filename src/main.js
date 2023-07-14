@@ -3,7 +3,6 @@ import App from './App.vue';
 import router from './router';
 import 'bootstrap/dist/css/bootstrap.css';
 import { initializeApp} from 'firebase/app'
-import 'firebase/auth'
 import '@fortawesome/fontawesome-free/css/all.css'
 import store from './store/store.js'
 
@@ -21,7 +20,14 @@ const firebaseConfig = {
   // Initialize Firebase
   initializeApp(firebaseConfig);
 
-createApp(App)
-.use(router)
-.use(store)
-.mount('#app')
+// Create the app instance
+const app = createApp(App);
+
+// Initialize authentication before mounting the app
+store.dispatch('initializeAuth').then(() => {
+  // Mount the app and start the router
+  app
+    .use(router)
+    .use(store)
+    .mount('#app');
+});
