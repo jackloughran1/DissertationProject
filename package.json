@@ -6,8 +6,6 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
-    
-    
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.0",
@@ -20,6 +18,7 @@
     "core-js": "^3.8.3",
     "firebase": "^9.23.0",
     "font-awesome": "^4.7.0",
+    "geocode-js": "^1.0.3",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2",
     "vuex": "^4.1.0"

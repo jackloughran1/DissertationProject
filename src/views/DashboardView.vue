@@ -2,11 +2,12 @@
   <div>
     <TopbarComponent :firstName="firstName" :lastName="lastName" @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
     <div class="wrapper" :class="{ click_collapse: sidebarCollapsed }">
-      <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed"/>
+      <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" />
       <div class="container" :class="{ click_collapse: sidebarCollapsed }">
         <!-- Content area -->
         <h1 class="text-center my-4">{{ firstName }}'s Calendar View</h1>
         <div id="calendar"></div>
+
       </div>
     </div>
   </div>
@@ -22,108 +23,109 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import {  getAuth } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, doc, where, query } from 'firebase/firestore';
 
 
 export default {
-    name: "DashboardView",
+  name: "DashboardView",
 
-    components: {
-      TopbarComponent,
-      SidebarComponent,
-    },
-
-    data() {
-        return {
-            sidebarCollapsed: false,
-            // storage for events
-            events: [],
-            firstName: "",
-            lastName: "",
-            isManager: false,
-           
-        };
-    },
-    computed: {
-        // ternary operator if true/false
-        sidebarWidth() {
-            return this.sidebarCollapsed ? "0" : "250px";
-        },
-    },
-
-    methods: {
-      toggleSidebar(collapsed) {
-    this.sidebarCollapsed = collapsed;
+  components: {
+    TopbarComponent,
+    SidebarComponent,
   },
 
+  data() {
+    return {
+      sidebarCollapsed: false,
+      // storage for events
+      events: [],
+      firstName: "",
+      lastName: "",
+      isManager: false,
+
+    };
+  },
+  computed: {
+    // ternary operator if true/false
+    sidebarWidth() {
+      return this.sidebarCollapsed ? "0" : "250px";
     },
-   // vue lifecycle hook - used for fullcalendar
-    mounted() {
-       
-        // pullig user data to dunamically populate dashboard
-        const db = getFirestore();
-        const auth = getAuth();
-        const currentUser = auth.currentUser.uid;
-        const userCollection = collection(db, "users");
-        const userDocRef = doc(userCollection, currentUser);
-        const calendarEl = document.getElementById("calendar");
-        const calendar = new Calendar(calendarEl, {
-            plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-            initialView: "timeGridWeek",
-            nowIndicator: true,
-            selectable: true,
-            headerToolbar: {
-                left: "prev,next",
-                center: "title",
-                right: "timeGridWeek,timeGridDay"
-            },
-            events: this.events,
-        });
-        calendar.render();        //loading  logged in user's name
-        onSnapshot(userDocRef, (snapshot) => {
-            if (snapshot.exists()) {
-                const user = snapshot.data();
-                this.firstName = user.firstName;
-                this.lastName = user.lastName;
-                // check for manager role
-                this.isManager = user.role === "manager";
-                // console.log(snapshot.data());
-                // console.log(currentUser);
-                // pulling event data from firestore
-                const eventsCollection = collection(db, "events");
-                const groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
-                onSnapshot(groupQuery, (snapshot) => {
-                    const events = snapshot.docs.map((event) => {
-                        const eventData = event.data();
-                        return {
-                            title: eventData.eventName,
-                            start: eventData.timeStamp.toDate(),
-                            end: eventData.timeStamp.toDate(),
-                            location: eventData.location,
-                            groupId: eventData.groupId,
-                        };
-                    });
-                    this.events = events;
-                    calendar.setOption("events", events);
-                    // console.log("Events:", events);
-                });
-                // if (this.events.length===0){
-                //   console.log('No events found');
-                // //   return;
-                // }
-            }
-            else {
-                console.log("User Document does not exist");
-                
-            }
-        });
+  },
+
+  methods: {
+    toggleSidebar(collapsed) {
+      this.sidebarCollapsed = collapsed;
     },
 
-   
+  },
+  // vue lifecycle hook - used for fullcalendar
+  mounted() {
+    const db = getFirestore();
+    const auth = getAuth();
+    const userCollection = collection(db, "users");
+    const userDocRef = doc(userCollection, auth.currentUser.uid);
+    const calendarEl = document.getElementById("calendar");
+
+    if (!calendarEl) {
+      console.error("Calendar element not found. Make sure you have an element with the id 'calendar' in your template.");
+      return;
+    }
+
+    const calendar = new Calendar(calendarEl, {
+      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+      initialView: "timeGridWeek",
+      nowIndicator: true,
+      selectable: true,
+      headerToolbar: {
+        left: "prev,next",
+        center: "title",
+        right: "timeGridWeek,timeGridDay"
+      },
+      events: this.events,
+    });
+
+    calendar.render();
+
+    onSnapshot(userDocRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const user = snapshot.data();
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
+        this.isManager = user.role === "manager";
+
+        const eventsCollection = collection(db, "events");
+        const groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
+        onSnapshot(groupQuery, (snapshot) => {
+          const events = snapshot.docs.map((event) => {
+            const eventData = event.data();
+            // toDate() causing error without this as problem adding timeStamp on manger
+            if (!eventData.timeStamp) {
+              console.warn("Event data does not have a valid timeStamp field:", eventData);
+              return null;
+            }
+            return {
+              title: eventData.eventName,
+              start: eventData.timeStamp.toDate(),
+              end: eventData.timeStamp.toDate(),
+              location: eventData.location,
+              groupId: eventData.groupId,
+            };
+          });
+          this.events = events.filter(Boolean);
+          calendar.setOption("events", this.events);
+        });
+      } else {
+        console.log("User Document does not exist");
+      }
+    });
+  },
+
+
+
 }
-    
-   
+
+
 
 
 
