@@ -99,20 +99,21 @@ export default {
         onSnapshot(groupQuery, (snapshot) => {
           const events = snapshot.docs.map((event) => {
             const eventData = event.data();
-            // toDate() causing error without this as problem adding timeStamp on manger
-            if (!eventData.timeStamp) {
+            // toDate() causing error without this as problem adding timeStamp on manager
+            if (!eventData.timeStampStart || !eventData.timeStampEnd) {
               console.warn("Event data does not have a valid timeStamp field:", eventData);
               return null;
             }
             return {
               title: eventData.eventName,
-              start: eventData.timeStamp.toDate(),
-              end: eventData.timeStamp.toDate(),
+              start: eventData.timeStampStart.toDate(),
+              end: eventData.timeStampEnd.toDate(),
               location: eventData.location,
               groupId: eventData.groupId,
             };
           });
           this.events = events.filter(Boolean);
+          console.log(events)
           calendar.setOption("events", this.events);
         });
       } else {

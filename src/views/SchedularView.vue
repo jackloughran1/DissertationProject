@@ -15,9 +15,14 @@
                   placeholder="Enter event name" />
               </div>
               <div class="mb-3">
-                <label for="location" class="form-label">Location (Lat, Long)</label>
-                <input type="text" class="form-control" id="location" v-model="newEvent.location"
-                  placeholder="Enter location" />
+                <label for="location" class="form-label">Location (Lat)</label>
+                <input type="text" class="form-control" id="location" v-model="newEvent.lat"
+                  placeholder="Enter Latitude" />
+              </div>
+              <div class="mb-3">
+                <label for="location" class="form-label">Location (Long)</label>
+                <input type="text" class="form-control" id="location" v-model="newEvent.long"
+                  placeholder="Enter Longitude" />
               </div>
               <div class="mb-3">
                 <label for="timeStampStart" class="form-label">Start Time</label>
@@ -40,9 +45,9 @@
                     <br />
                     Location: {{ event.location }}
                     <br />
-                    Starts: {{ event.timeStampStart}}
+                    Starts: {{ event.timeStampStart.toLocaleString()}}
                     <br />
-                    Finishes: {{ event.timeStampEnd }}
+                    Finishes: {{ event.timeStampEnd.toLocaleString() }}
                   </div>
                   <div>
                     <button class="btn btn-sm btn-danger" @click="deleteEvent(event.id)">Delete</button>
@@ -62,6 +67,7 @@ import TopbarComponent from '../components/TopbarComponent.vue';
 import SidebarComponent from '../components/SidebarComponent.vue';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, doc, where, query, setDoc, getDoc, Timestamp, GeoPoint } from 'firebase/firestore';
+import axios from 'axios';
 
 export default {
   name: 'SchedularView',
@@ -114,7 +120,7 @@ addEvent() {
         const newEvent = {
           eventName: this.newEvent.eventName,
           groupId: user.groupId,
-          location: new GeoPoint(this.newEvent.location), // lat and long conversion
+          location: new GeoPoint(Number(this.newEvent.lat), Number(this.newEvent.long)), // lat and long conversion
           timeStampStart: Timestamp.fromDate(new Date(this.newEvent.timeStampStart)), // firestore conversion
           timeStampEnd: Timestamp.fromDate(new Date(this.newEvent.timeStampEnd)),
         };
@@ -122,7 +128,8 @@ addEvent() {
         setDoc(doc(eventsCollection), newEvent);
 
         this.newEvent.eventName = '';
-        this.newEvent.location = '';
+        this.newEvent.lat = '';
+        this.newEvent.long='';
         this.newEvent.timeStampStart = '';
         this.newEvent.timeStampEnd = '';
       } else {
@@ -146,38 +153,56 @@ addEvent() {
   },
 
   created() {
-    const db = getFirestore();
-    const auth = getAuth();
-    const currentUser = auth.currentUser.uid;
-    const userCollection = collection(db, "users");
-    const userDocRef = doc(userCollection, currentUser);
+  const apiKey = '482c2d29fb6a4cdbb046f187833039b5';
 
-    onSnapshot(userDocRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const user = snapshot.data();
+  const db = getFirestore();
+  const auth = getAuth();
+  const currentUser = auth.currentUser.uid;
+  const userCollection = collection(db, "users");
+  const userDocRef = doc(userCollection, currentUser);
 
-        const eventsCollection = collection(db, "events");
-        const groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
-        onSnapshot(groupQuery, (snapshot) => {
-          this.events = snapshot.docs.map((event) => {
-            const eventData = event.data();
+  onSnapshot(userDocRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const user = snapshot.data();
 
-            return {
-              id: event.id,
-              eventName: eventData.eventName,
-              location: eventData.location,
-              timeStampStart: eventData.timeStampStart,
-              timeStampEnd: eventData.timeStampEnd,
+      const eventsCollection = collection(db, "events");
+      const groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
+      onSnapshot(groupQuery, async (snapshot) => {
+        this.events = [];
 
-            };
+        // for loop through events
+        for (const event of snapshot.docs) {
+          const eventData = event.data();
+
+          // use of reverse geocode API - geoaptify
+          try {
+            const response = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${eventData.location.latitude}&lon=${eventData.location.longitude}&apiKey=${apiKey}`);
+            const result = response.data;
+            if (result.features.length) {
+              const location = result.features[0].properties.formatted;
+              eventData.location = location;
+            } else {
+              console.log("No address found");
+            }
+          } catch (error) {
+            console.error('Error:', error);
+          }
+
+          this.events.push({
+            id: event.id,
+            eventName: eventData.eventName,
+            location: eventData.location,
+            timeStampStart: eventData.timeStampStart.toDate(),
+            timeStampEnd: eventData.timeStampEnd.toDate(),
           });
-        });
-      }
-    });
-  },
-};
+        }
+      });
+    }
+  });
+}
+}
 </script>
 
-<style scoped>
+<style>
 
 </style>
