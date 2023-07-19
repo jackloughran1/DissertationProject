@@ -322,7 +322,6 @@ export default {
         onSnapshot(groupQuery, async (snapshot) => {
           this.events = [];
           // for loop through events needed for API
-
           console.log(groupQuery)
           for (const event of snapshot.docs) {
             const eventData = event.data();

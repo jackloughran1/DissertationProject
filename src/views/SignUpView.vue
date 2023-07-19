@@ -57,7 +57,7 @@
                   </div>
 
                   <div class="text-center pt-1 mb-5 pb-1">
-                    <button class="btn btn-warning btn-block fa-lg mb-3 mx-3" type="submit"><b>Sign up</b></button>
+                    <button class="btn btn-warning btn-block mb-3 mx-3" type="submit" style="background-color: #039be5; border: none;"><b>Sign up</b></button>
                   </div>
 
                   <div class="text-center text-danger">
@@ -66,7 +66,7 @@
 
                   <div class="d-flex align-items-center justify-content-center pb-4">
                     <p class="mb-0 me-2"><b>Already have an account?</b></p>
-                    <a href="/login"><button type="button" class="btn btn-outline-warning">Log in</button></a>
+                    <a href="/login"><button type="button" class="btn btn-outline-warning" style="background-color: #039be5; border: none;">Log in</button></a>
                   </div>
 
                 </form>

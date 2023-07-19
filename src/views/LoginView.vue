@@ -33,7 +33,7 @@
                   </div>
 
                   <div class="text-center pt-1 mb-5 pb-1">
-                    <button class="btn btn-warning btn-block fa-lg mb-3 mx-3" type="submit"><b>Log in</b></button>
+                    <button class="btn btn-warning btn-block mb-3 mx-3" type="submit"><b>Log in</b></button>
                     <a class="text-muted mx-3" href="#!"><b>Forgot password?</b></a>
                   </div>
 

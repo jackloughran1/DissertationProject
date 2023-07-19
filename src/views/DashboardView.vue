@@ -6,8 +6,18 @@
       <div class="container" :class="{ click_collapse: sidebarCollapsed }">
         <!-- Content area -->
         <h1 class="text-center my-4">{{ firstName }}'s Calendar View</h1>
-        <div id="calendar"></div>
-
+        <div id="calendar">
+        </div>
+        <div class="col-md-6 mx-auto">
+          <div class="event-details text-center" v-if="selectedEvent">
+            <i class="fa-solid fa-futbol mb-3" v-if="selectedEvent.title === 'Game'"></i>
+            <i class="fa-solid fa-person-walking mb-3" v-else></i>
+            <h2>{{ selectedEvent.title }}</h2>
+            <p>Start: {{ selectedEvent.start }}</p>
+            <p>End: {{ selectedEvent.end }}</p>
+            <p>Location: {{ selectedEvent.location }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -33,6 +43,7 @@ export default {
   components: {
     TopbarComponent,
     SidebarComponent,
+
   },
 
   data() {
@@ -43,6 +54,7 @@ export default {
       firstName: "",
       lastName: "",
       isManager: false,
+      selectedEvent: null,
 
     };
   },
@@ -58,6 +70,36 @@ export default {
       this.sidebarCollapsed = collapsed;
     },
 
+    formatDate(date) {
+
+      const options = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      }
+
+      return new Date(date).toLocaleString('en-UK', options)
+    },
+
+    handleEventClick(eventInfo) {
+
+      const clickedEvent = eventInfo.event
+
+      this.selectedEvent = {
+        title: clickedEvent.title,
+        start: this.formatDate(clickedEvent.start),
+        end: this.formatDate(clickedEvent.end),
+        location: clickedEvent.extendedProps.location
+      }
+
+
+
+
+      // console.log('clicked')
+    }
   },
   // vue lifecycle hook - used for fullcalendar
   mounted() {
@@ -68,21 +110,30 @@ export default {
     const calendarEl = document.getElementById("calendar");
 
     if (!calendarEl) {
-      console.error("Calendar element not found. Make sure you have an element with the id 'calendar' in your template.");
+      console.error("Calendar element not found");
       return;
     }
 
     const calendar = new Calendar(calendarEl, {
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-      initialView: "timeGridWeek",
+      timeZone: 'local',
+      initialView: "timeGridFourDay",
       nowIndicator: true,
       selectable: true,
+      views: {
+        timeGridFourDay: {
+          type: 'timeGrid',
+          duration: { days: 4 }
+        },
+      },
       headerToolbar: {
-        left: "prev,next",
+        left: "prev,next,today",
         center: "title",
         right: "timeGridWeek,timeGridDay"
       },
       events: this.events,
+
+      eventClick: this.handleEventClick,
     });
 
     calendar.render();
@@ -108,12 +159,12 @@ export default {
               title: eventData.eventName,
               start: eventData.timeStampStart.toDate(),
               end: eventData.timeStampEnd.toDate(),
-              location: eventData.location,
+              extendedProps: { location: eventData.location, },
               groupId: eventData.groupId,
             };
           });
           this.events = events.filter(Boolean);
-          console.log(events)
+          // console.log(events)
           calendar.setOption("events", this.events);
         });
       } else {
@@ -316,5 +367,37 @@ export default {
 
 .userProfile:hover {
   color: rgb(24, 124, 216);
+}
+
+.event-details {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #007dc3;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-details h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: white;
+  text-decoration: solid;
+  
+}
+
+.event-details p {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: white;
+  
+}
+
+.event-details i {
+  font-size: 50px;
+  color: white;
+ 
+  
+
 }
 </style>
