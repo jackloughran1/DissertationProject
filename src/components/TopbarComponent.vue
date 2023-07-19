@@ -40,6 +40,7 @@ computed: {
 methods: {
   emitToggleSidebar() {
     this.$emit('toggle-sidebar');
+    
   },
 },
 

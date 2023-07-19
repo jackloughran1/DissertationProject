@@ -92,7 +92,7 @@ export default {
         title: clickedEvent.title,
         start: this.formatDate(clickedEvent.start),
         end: this.formatDate(clickedEvent.end),
-        location: clickedEvent.extendedProps.location
+        location: clickedEvent.extendedProps.location // need to reverse geocode this.
       }
 
 
