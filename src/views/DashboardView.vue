@@ -35,6 +35,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, doc, where, query } from 'firebase/firestore';
+import axios from 'axios';
 
 
 export default {
@@ -84,22 +85,33 @@ export default {
       return new Date(date).toLocaleString('en-UK', options)
     },
 
-    handleEventClick(eventInfo) {
+    async handleEventClick(eventInfo) {
+  const apiKey = '482c2d29fb6a4cdbb046f187833039b5';
+  const clickedEvent = eventInfo.event;
 
-      const clickedEvent = eventInfo.event
+  try {
+    const response = await axios.get(
+      `https://api.geoapify.com/v1/geocode/reverse?lat=${clickedEvent.extendedProps.location.latitude}&lon=${clickedEvent.extendedProps.location.longitude}&apiKey=${apiKey}`
+    );
+    const result = response.data;
+    if (result.features.length) {
+      const locationFormatted = result.features[0].properties.formatted;
 
       this.selectedEvent = {
         title: clickedEvent.title,
         start: this.formatDate(clickedEvent.start),
         end: this.formatDate(clickedEvent.end),
-        location: clickedEvent.extendedProps.location // need to reverse geocode this.
-      }
-
-
-
+        location: locationFormatted,
+      };
+    } else {
+      console.log('No address found');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+},
 
       // console.log('clicked')
-    }
   },
   // vue lifecycle hook - used for fullcalendar
   mounted() {
@@ -383,21 +395,21 @@ export default {
   margin-bottom: 10px;
   color: white;
   text-decoration: solid;
-  
+
 }
 
 .event-details p {
   font-size: 16px;
   margin-bottom: 5px;
   color: white;
-  
+
 }
 
 .event-details i {
   font-size: 50px;
   color: white;
- 
-  
+
+
 
 }
 </style>
