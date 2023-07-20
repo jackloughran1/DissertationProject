@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { getFirestore, doc, onSnapshot, collection } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, collection } from 'firebase/firestore';
 import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth';
 
 // defining state of userData and auth token, auth token used for persistence
@@ -8,7 +8,7 @@ const store = createStore({
     userData: {
       firstName: '',
       lastName: '',
-      isManager: false
+      isManager: false,
       
     },
     authToken: '',
@@ -29,26 +29,34 @@ const store = createStore({
   actions: {
 
 // userData method
-   async fetchUserData({ commit }) {
-      const db = getFirestore();
-      const auth = getAuth();
-      const currentUser = auth.currentUser.uid;
-      const userCollection = collection(db, 'users');
-      const userDocRef = doc(userCollection, currentUser);
+async fetchUserData({ commit }) {
+  const db = getFirestore();
+  const auth = getAuth();
+  const currentUser = auth.currentUser.uid;
+  const userCollection = collection(db, 'users');
+  const userDocRef = doc(userCollection, currentUser);
 
-      onSnapshot(userDocRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const user = snapshot.data();
-          commit('setUserData', {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            isManager: user.role === 'manager',
-            
-          });
-          
-        }
+  try {
+    const snapshot = await getDoc(userDocRef);
+    if (snapshot.exists()) {
+      const user = snapshot.data();
+      commit('setUserData', {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        userRole: user.role,
+        isManager: user.role === 'manager',
       });
-    },
+    } else {
+      
+      console.error('User document is not found');
+    }
+  } catch (error) {
+   
+    console.error('Error fetching user data:', error);
+    
+  }
+
+},
     async setAuthToken({ commit }, authToken) {
       commit('setAuthToken', authToken);
 

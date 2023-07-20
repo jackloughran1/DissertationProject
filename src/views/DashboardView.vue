@@ -1,26 +1,23 @@
 <template>
   <div>
-    <TopbarComponent :firstName="firstName" :lastName="lastName" @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
-    <div class="wrapper" :class="{ click_collapse: sidebarCollapsed }">
-      <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" />
-      <div class="container" :class="{ click_collapse: sidebarCollapsed }">
-        <!-- Content area -->
-        <h1 class="text-center my-4">{{ firstName }}'s Calendar View</h1>
-        <div id="calendar">
-        </div>
-        <div class="col-md-6 mx-auto">
-          <div class="event-details text-center" v-if="selectedEvent">
-            <i class="fa-solid fa-futbol mb-3" v-if="selectedEvent.title === 'Game'"></i>
-            <i class="fa-solid fa-person-walking mb-3" v-else></i>
-            <h2>{{ selectedEvent.title }}</h2>
-            <p>Start: {{ selectedEvent.start }}</p>
-            <p>End: {{ selectedEvent.end }}</p>
-            <p>Location: {{ selectedEvent.location }}</p>
-          </div>
-        </div>
+  <TopbarComponent :firstName="firstName" :lastName="lastName" @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
+  <div class="wrapper d-flex flex-row flex-md-nowrap">
+    <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" class="flex-shrink-0" />
+    <div class="container-fluid mt-5 mt-md-0">
+      <h1 class="text-center my-4">{{ firstName }}'s Calendar View</h1>
+      <div id="calendar">
+      </div>
+      <div class="event-details text-center mt-3" v-if="selectedEvent">
+        <i class="fa-solid fa-futbol mb-3" v-if="selectedEvent.title === 'Game'"></i>
+        <i class="fa-solid fa-person-walking mb-3" v-else></i>
+        <h2 class="fs-5">{{ selectedEvent.title }}</h2>
+        <p class="fs-6">Start: {{ selectedEvent.start }}</p>
+        <p class="fs-6">End: {{ selectedEvent.end }}</p>
+        <p class="fs-6">Location: {{ selectedEvent.location }}</p>
       </div>
     </div>
   </div>
+</div>
 </template>
 
 

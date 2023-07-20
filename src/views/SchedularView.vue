@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="row mt-5">
-          <div class="col-md-12">
+          <div class="col-md-12 col-sm">
             <h2 class="text-center">All Events</h2>
             <table class="table table-striped text-center">
               <thead>

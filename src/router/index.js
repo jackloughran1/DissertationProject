@@ -2,9 +2,11 @@ import { createRouter, createWebHistory } from 'vue-router';
 import DashboardView from '@/views/DashboardView.vue';
 import SignUpView from '@/views/SignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
-import SchedularView from '@/views/SchedularView.vue'
+import SchedularView from '@/views/SchedularView.vue';
+import UnauthorizedView from '@/views/UnauthorizedView';
 import { getAuth } from 'firebase/auth';
 import store from '../store/store.js'
+
 
 // requires auth in route
 function requiresAuth(to, from, next){
@@ -41,8 +43,13 @@ const routes = [
     path: '/schedular',
     name: 'schedular',
     component : SchedularView,
-    meta: {requiresAuth:true}, 
+    meta: {requiresManager: true}, 
     
+  },
+  {
+    path: '/unauthorized',
+    name: 'unauthorized',
+    component: UnauthorizedView
   }
 ];
 
@@ -52,16 +59,26 @@ const router = createRouter({
 });
 
 // route guard
-router.beforeEach((to, from, next)=>{
+router.beforeEach(async (to, from, next)=>{
   
   const authToken = store.state.authToken;
 
   if (!authToken && to.meta.requiresAuth) {
     next('/login');
-  } else {
-    next();
+    return;
   }
-  })
+    
+   await store.dispatch('fetchUserData');
+    const userRole = store.state.userData.userRole
+
+    console.log(userRole)
+
+    if (to.meta.requiresManager && userRole!=='manager'){
+      next('/unauthorized')
+    } else {
+      next();
+    }
+  });
 
 
 

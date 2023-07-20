@@ -34,7 +34,7 @@ computed: {
 
   fullName(){
     return `${this.userData.firstName} ${this.userData.lastName}`;
-  }
+  },
 
 },
 methods: {
