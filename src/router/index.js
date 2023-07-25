@@ -4,6 +4,9 @@ import SignUpView from '@/views/SignUpView.vue';
 import LoginView from '@/views/LoginView.vue';
 import SchedularView from '@/views/SchedularView.vue';
 import UnauthorizedView from '@/views/UnauthorizedView';
+import UsersCrud from '@/views/UsersCrud';
+import EventsCrud from '@/views/EventsCrud';
+import GroupsCrud from '@/views/GroupsCrud';
 import { getAuth } from 'firebase/auth';
 import store from '../store/store.js'
 
@@ -24,7 +27,7 @@ function requiresAuth(to, from, next){
 const routes = [
   {
     path: '/',
-    name: 'Dashboard',
+    name: 'DashboardView',
     component: DashboardView,
     meta: {requiresAuth:true}, 
     beforeEnter: requiresAuth
@@ -49,8 +52,26 @@ const routes = [
   {
     path: '/unauthorized',
     name: 'unauthorized',
-    component: UnauthorizedView
-  }
+    component: UnauthorizedView,
+  },
+  {
+    path: '/userscrud',
+    name: 'UsersCrud',
+    component:  UsersCrud
+  },
+  {
+    path: '/eventscrud',
+    name: 'eventsCrud',
+    component: EventsCrud
+  },
+  {
+    path: '/groupscrud',
+    name: 'groupsCrud',
+    component: GroupsCrud
+  },
+  
+
+  
 ];
 
 const router = createRouter({
@@ -70,8 +91,6 @@ router.beforeEach(async (to, from, next)=>{
     
    await store.dispatch('fetchUserData');
     const userRole = store.state.userData.userRole
-
-    console.log(userRole)
 
     if (to.meta.requiresManager && userRole!=='manager'){
       next('/unauthorized')

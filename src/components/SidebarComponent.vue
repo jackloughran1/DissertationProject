@@ -2,7 +2,31 @@
 <!--Sidebar-->
 <div class="sidebar" :style="{ width: sidebarWidth }">
       <div class="sidebar_container">
-        <ul>
+        
+          <div v-if="isAdmin">
+            <ul>
+          <li>
+            <a href="/">
+              <span class="icon"><i class="fa-solid fa-house" style="color: #fafafa;"></i></span>
+              <span class="text">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              <span class="icon"><i class="fa-solid fa-users-rectangle" style="color: #ffffff;"></i></span>
+              <span class="text">Manage Account's</span>
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              <span class="icon"><i class="fa-solid fa-gears" style="color: #fcfcfc;"></i></span>
+              <span class="text">Settings</span>
+            </a>
+          </li>
+        </ul>
+        </div>
+        <div v-else> 
+          <ul>
           <li>
             <a href="/">
               <span class="icon"><i class="fa-solid fa-house" style="color: #fafafa;"></i></span>
@@ -29,6 +53,8 @@
           </li>
 
         </ul>
+      
+      </div>
         <div class="logout">
           <a href="/login">
             <span class="icon"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></span>
@@ -36,9 +62,9 @@
                 Out</button></span>
           </a>
         </div>
-      </div>
+      
     </div>
-
+</div>
 
 </template>
 
@@ -58,6 +84,11 @@ export default{
       return this.$store.state.userData.isManager;
         
       },
+
+      isAdmin(){
+        return this.$store.state.userData.isAdmin;
+      },
+
     // ternary operator if true/false
     sidebarWidth() {
       return this.sidebarCollapsed ? '0' : '250px';

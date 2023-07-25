@@ -9,12 +9,15 @@ const store = createStore({
       firstName: '',
       lastName: '',
       isManager: false,
+      isAdmin: false,
       
     },
     authToken: '',
   },
   getters: {
-    authToken: (state) => state.authToken
+    authToken: (state) => state.authToken,
+
+    isAdmin: (state)=> state.userData.isAdmin
   },
   mutations: {
     setUserData(state, userData) {
@@ -30,31 +33,40 @@ const store = createStore({
 
 // userData method
 async fetchUserData({ commit }) {
-  const db = getFirestore();
+
+  console.log('Called')
   const auth = getAuth();
-  const currentUser = auth.currentUser.uid;
+  const user = auth.currentUser;
+
+  if (!user) {
+    
+    return;
+  }
+  const db = getFirestore();
   const userCollection = collection(db, 'users');
-  const userDocRef = doc(userCollection, currentUser);
+  const userDocRef = doc(userCollection, user.uid);
 
   try {
     const snapshot = await getDoc(userDocRef);
     if (snapshot.exists()) {
-      const user = snapshot.data();
+      const userData = snapshot.data();
+
+     
+      
       commit('setUserData', {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        userRole: user.role,
-        isManager: user.role === 'manager',
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        userRole: userData.role,
+        isAdmin: userData.role ==='admin',
+        isManager: userData.role === 'manager',
       });
     } else {
-      
       console.error('User document is not found');
     }
   } catch (error) {
-   
     console.error('Error fetching user data:', error);
-    
   }
+
 
 },
     async setAuthToken({ commit }, authToken) {

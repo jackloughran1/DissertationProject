@@ -1,23 +1,78 @@
 <template>
   <div>
-  <TopbarComponent :firstName="firstName" :lastName="lastName" @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
-  <div class="wrapper d-flex flex-row flex-md-nowrap">
-    <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" class="flex-shrink-0" />
-    <div class="container-fluid mt-5 mt-md-0">
-      <h1 class="text-center my-4">{{ firstName }}'s Calendar View</h1>
-      <div id="calendar">
+    <div v-if="isAdmin">
+      <TopbarComponent v-if="isAdmin" :firstName="firstName" :lastName="lastName"
+        @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
+
+      <SidebarComponent v-if="isAdmin" :isManager="isManager" :sidebarCollapsed="sidebarCollapsed"
+        class="flex-shrink-0" />
+
+      <div class="admin-container container-fluid mt-5 d-flex flex-column min-vh-100 justify-content-center align-items-center">
+        <h1 class="text-center my-3">Access Database</h1>
+        <div class="row justify-content-center">
+          <div class="col-sm-3">
+            <div class="card mb-4">
+              <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <i class="icon fa-solid fa-users fa-2xl my-3"></i>
+                <h4 class="card-title my-3">User's</h4>
+                <span>
+                  <a href="/userscrud">
+                  <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></button>
+                </a>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="card">
+              <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <i class="icon fa-solid fa-calendar-days fa-2xl my-3"></i>
+                <h4 class="card-title my-3">Event's</h4>
+                <span>
+                  <a href="/eventscrud">
+                  <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></button>
+                </a>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="card">
+              <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <i class="icon fa-solid fa-people-group fa-2xl my-3"></i>
+                <h4 class="card-title my-3">Group's</h4>
+                <span>
+                  <a href="/groupscrud">
+                  <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></button>
+                </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="event-details text-center mt-3" v-if="selectedEvent">
-        <i class="fa-solid fa-futbol mb-3" v-if="selectedEvent.title === 'Game'"></i>
-        <i class="fa-solid fa-person-walking mb-3" v-else></i>
-        <h2 class="fs-5">{{ selectedEvent.title }}</h2>
-        <p class="fs-6">Start: {{ selectedEvent.start }}</p>
-        <p class="fs-6">End: {{ selectedEvent.end }}</p>
-        <p class="fs-6">Location: {{ selectedEvent.location }}</p>
+    </div>
+    <div v-else>
+      <TopbarComponent :firstName="firstName" :lastName="lastName"
+        @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
+      <div class="wrapper d-flex flex-row flex-md-nowrap">
+        <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" class="flex-shrink-0" />
+        <div class="container-fluid mt-5 mt-md-0">
+          <h1 class="text-center pt-5 my-4">{{ firstName }}'s Calendar View</h1>
+          <div id="calendar">
+          </div>
+          <div class="event-details text-center mt-3" v-if="selectedEvent">
+            <i class="fa-solid fa-futbol mb-3" v-if="selectedEvent.title === 'Game'"></i>
+            <i class="fa-solid fa-person-walking mb-3" v-else></i>
+            <h2 class="fs-5">{{ selectedEvent.title }}</h2>
+            <p class="fs-6">Start: {{ selectedEvent.start }}</p>
+            <p class="fs-6">End: {{ selectedEvent.end }}</p>
+            <p class="fs-6">Location: {{ selectedEvent.location }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 
@@ -49,9 +104,11 @@ export default {
       sidebarCollapsed: false,
       // storage for events
       events: [],
+
       firstName: "",
       lastName: "",
       isManager: false,
+      isAdmin: false,
       selectedEvent: null,
 
     };
@@ -83,32 +140,32 @@ export default {
     },
 
     async handleEventClick(eventInfo) {
-  const apiKey = '482c2d29fb6a4cdbb046f187833039b5';
-  const clickedEvent = eventInfo.event;
+      const apiKey = '482c2d29fb6a4cdbb046f187833039b5';
+      const clickedEvent = eventInfo.event;
 
-  try {
-    const response = await axios.get(
-      `https://api.geoapify.com/v1/geocode/reverse?lat=${clickedEvent.extendedProps.location.latitude}&lon=${clickedEvent.extendedProps.location.longitude}&apiKey=${apiKey}`
-    );
-    const result = response.data;
-    if (result.features.length) {
-      const locationFormatted = result.features[0].properties.formatted;
+      try {
+        const response = await axios.get(
+          `https://api.geoapify.com/v1/geocode/reverse?lat=${clickedEvent.extendedProps.location.latitude}&lon=${clickedEvent.extendedProps.location.longitude}&apiKey=${apiKey}`
+        );
+        const result = response.data;
+        if (result.features.length) {
+          const locationFormatted = result.features[0].properties.formatted;
 
-      this.selectedEvent = {
-        title: clickedEvent.title,
-        start: this.formatDate(clickedEvent.start),
-        end: this.formatDate(clickedEvent.end),
-        location: locationFormatted,
-      };
-    } else {
-      console.log('No address found');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-},
+          this.selectedEvent = {
+            title: clickedEvent.title,
+            start: this.formatDate(clickedEvent.start),
+            end: this.formatDate(clickedEvent.end),
+            location: locationFormatted,
+          };
+        } else {
+          console.log('No address found');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    },
 
-      // console.log('clicked')
+    // console.log('clicked')
   },
   // vue lifecycle hook - used for fullcalendar
   mounted() {
@@ -152,10 +209,18 @@ export default {
         const user = snapshot.data();
         this.firstName = user.firstName;
         this.lastName = user.lastName;
+        this.isAdmin = user.role === "admin";
         this.isManager = user.role === "manager";
 
         const eventsCollection = collection(db, "events");
-        const groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
+        let groupQuery;
+
+        if (this.isAdmin) {
+          groupQuery = eventsCollection
+        } else {
+          groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
+        }
+
         onSnapshot(groupQuery, (snapshot) => {
           const events = snapshot.docs.map((event) => {
             const eventData = event.data();
@@ -192,7 +257,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 .topbar {
   position: fixed;
   top: 0;
@@ -405,8 +470,28 @@ export default {
 .event-details i {
   font-size: 50px;
   color: white;
-
-
-
 }
+
+.admin-container {
+  padding-top: 60px;
+  
+}
+
+.card {
+ margin: 50px;
+ padding: 80px;
+ 
+}
+
+.icon{
+  font-size: 36px;
+}
+
+
+.btn{
+  margin-top: 20px;
+  font-size: 20px;
+  width: 70px;
+}
+
 </style>
