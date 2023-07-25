@@ -57,17 +57,23 @@ const routes = [
   {
     path: '/userscrud',
     name: 'UsersCrud',
-    component:  UsersCrud
+    component:  UsersCrud,
+    meta: {requiresAuth:true}, 
+    beforeEnter: requiresAuth,
   },
   {
     path: '/eventscrud',
     name: 'eventsCrud',
-    component: EventsCrud
+    component: EventsCrud,
+    meta: {requiresAuth:true}, 
+    beforeEnter: requiresAuth
   },
   {
     path: '/groupscrud',
     name: 'groupsCrud',
-    component: GroupsCrud
+    component: GroupsCrud,
+    meta: {requiresAuth:true}, 
+    beforeEnter: requiresAuth
   },
   
 
