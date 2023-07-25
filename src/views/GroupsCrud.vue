@@ -7,14 +7,15 @@
     </div>
 
     <div class="row mt-5">
-      <div class="col-md-12 col-sm">
+      <div class="col-md-12">
         <h2 class="text-center mt-4">All Groups</h2>
-        <span style="float: right;">
-          <input type="text" v-model="searchQuery" @input="searchGroup" placeholder="Search for group/team"
-            style="height: 35px;">
-          <button class="btn btn-primary mx-2"><i class="fa-solid fa-magnifying-glass"
-              style="color: #ffffff;"></i></button>
-        </span>
+        <div class="input-group mb-3">
+          <input type="text" v-model="searchQuery" @input="searchGroups" class="form-control" placeholder="Search Group" />
+          <button class="btn btn-primary" @click="searchGroups">
+            <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+          </button>
+        </div>
+        <div class="table-responsive">
         <table class="table table-striped text-center">
           <thead>
             <tr>
@@ -38,13 +39,15 @@
             </tr>
           </tbody>
         </table>
-        <div class="text-center">
-          <button type="button" class="btn btn-primary btn-lg" @click="openForm()" data-toggle="modal"
-            data-target="#ModalExample">
-            Add </button>
-        </div>
       </div>
     </div>
+    </div>
+        <div class="text-center">
+          <button type="button" class="btn btn-primary btn-lg" @click="openForm()">
+            Add 
+          </button>
+        </div>
+      
     <!-- Form to edit user fields -->
     <div v-if="selectedGroup">
       <div class="row mt-5">

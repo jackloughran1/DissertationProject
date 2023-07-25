@@ -3,83 +3,92 @@
     <div v-if="isAdmin">
       <TopbarComponent :firstName="firstName" :lastName="lastName" @toggle-sidebar="toggleSidebar(!sidebarCollapsed)" />
       <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" class="flex-shrink-0" />
-
     </div>
 
     <div class="row mt-5">
-      <div class="col-md-12 col-sm">
+      <div class="col-md-12">
         <h2 class="text-center mt-4">All Users</h2>
-        <span style="float: right;">
-          <input type="text" v-model="searchQuery" @input="searchUsers" placeholder="Search Users" style="height: 35px;">
-          <button class="btn btn-primary mx-2"><i class="fa-solid fa-magnifying-glass"
-              style="color: #ffffff;"></i></button>
-        </span>
-        <table class="table table-striped text-center">
-          <thead>
-            <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in users" :key="user.id">
-              <td>{{ user.firstName }}</td>
-              <td>{{ user.lastName }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.role }}</td>
-              <td>
-                <button class="btn btn-sm btn-warning mx-2" @click="editUser(user)"><i class="fa-solid fa-pen"
-                    style="color: #ffffff;"></i></button>
-                <button class="btn btn-sm btn-danger" @click="deleteUser(user.id)"><i class="fa-solid fa-trash"
-                    style="color: #ffffff;"></i></button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="input-group mb-3">
+          <input type="text" v-model="searchQuery" @input="searchUsers" class="form-control" placeholder="Search Users" />
+          <button class="btn btn-primary" @click="searchUsers">
+            <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped text-center">
+            <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="user in users" :key="user.id">
+                <td>{{ user.firstName }}</td>
+                <td>{{ user.lastName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning mx-2" @click="editUser(user)">
+                    <i class="fa-solid fa-pen" style="color: #ffffff;"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger mt-2" @click="deleteUser(user.id)">
+                    <i class="fa-solid fa-trash" style="color: #ffffff;"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <div class="text-center">
       <button type="button" class="btn btn-primary btn-lg" @click="openForm()">
-        Add </button>
+        Add
+      </button>
     </div>
-    <!-- Form to edit user fields -->
 
+    <!-- Form to edit user fields -->
     <div v-if="selectedUser">
       <div class="row mt-5">
         <div class="col-md-6 mx-auto text-center">
           <h3 class="text-center">Edit</h3>
           <form @submit.prevent="updateUser">
-            <label for="firstName">First Name</label>
-            <input class="form-control" type="text" v-model="selectedUser.firstName" required />
-
-            <label for="lastName">Last Name</label>
-            <input type="text" class="form-control" v-model="selectedUser.lastName" required />
-
-            <label for="email">Email</label>
-            <input type="text" class="form-control" v-model="selectedUser.email" required />
-
-            <div class="mx-2 my-3">
-              <label class="mx-2" for="role">Role</label>
-              <select v-model="selectedUser.role">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input class="form-control" type="text" v-model="selectedUser.firstName" required />
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" class="form-control" v-model="selectedUser.lastName" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="text" class="form-control" v-model="selectedUser.email" required />
+            </div>
+            <div class="form-group my-3">
+              <label for="role">Role</label>
+              <select v-model="selectedUser.role" class="form-select">
                 <option disabled value="">Select Role</option>
                 <option value="user">user</option>
                 <option value="admin">admin</option>
                 <option value="manager">manager</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-success mx-2 my-2"><i class="fa-solid fa-check"
+            <div class="text-center mx-2">
+              <button type="submit" class="btn btn-success mx-2"><i class="fa-solid fa-check"
                 style="color: #ffffff;"></i></button>
-            <button type="button" class="btn btn-danger" @click="cancelEdit"><i class="fa-solid fa-ban"
+              <button type="button" class="btn btn-danger" @click="cancelEdit"><i class="fa-solid fa-ban"
                 style="color: #ffffff;"></i></button>
+            </div>
           </form>
         </div>
       </div>
     </div>
-
 
     <div v-if="showForm">
       <div class="row mt-5">
@@ -94,27 +103,23 @@
               <label for="lastName" class="form-label">Last Name</label>
               <input type="text" class="form-control" v-model="newUser.lastName" required />
             </div>
-
             <div class="form-group">
               <label for="email" class="form-label">Email</label>
               <input type="text" class="form-control" v-model="newUser.email" required />
             </div>
             <div class="form-group my-3">
-              <label for="role" class="form-label mx-2">Role</label>
-              <select v-model="newUser.role">
+              <label for="role" class="form-label">Role</label>
+              <select v-model="newUser.role" class="form-select">
                 <option disabled value="">Select Role</option>
                 <option value="user">user</option>
                 <option value="admin">admin</option>
                 <option value="manager">manager</option>
               </select>
             </div>
-
-            <button type="submit" class="btn btn-success mx-2 my-2">
-              <i class="fa-solid fa-check" style="color: #ffffff;"></i>
-            </button>
-            <button type="button" class="btn btn-danger" @click="closeForm">
-              <i class="fa-solid fa-ban" style="color: #ffffff;"></i>
-            </button>
+            <div class="text-center mx-2">
+              <button type="submit" class="btn btn-success mx-2">Add User</button>
+              <button type="button" class="btn btn-danger" @click="closeForm">Cancel</button>
+            </div>
           </form>
         </div>
       </div>

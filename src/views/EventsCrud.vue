@@ -7,14 +7,15 @@
     </div>
 
     <div class="row mt-5">
-      <div class="col-md-12 col-sm">
+      <div class="col-md-12">
         <h2 class="text-center mt-4">All Events</h2>
-        <span style="float: right;">
-          <input type="text" v-model="searchQuery" @input="searchEvents" placeholder="Search Events" style="height: 35px;">
-          <button class="btn btn-primary mx-2"><i class="fa-solid fa-magnifying-glass"
-              style="color: #ffffff;"></i></button>
-        </span>
-        
+        <div class="input-group mb-3">
+          <input type="text" v-model="searchQuery" @input="searchEvents" class="form-control" placeholder="Search Events" />
+          <button class="btn btn-primary" @click="searchEvents">
+            <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+          </button>
+        </div>
+        <div class="table-responsive">
             <table class="table table-striped text-center">
               <thead>
                 <tr>
@@ -33,11 +34,12 @@
                   <td>{{ formatDateTime(event.timeStampEnd) }}</td>
                   <td>
                     <button class="btn btn-sm btn-warning mx-2" @click="editEvent(event)"><i class="fa-solid fa-pen" style="color: #ffffff;"></i></button>
-                    <button class="btn btn-sm btn-danger" @click="deleteEvent(event.id)"><i class="fa-solid fa-trash" style="color: #ffffff;"></i></button>
+                    <button class="btn btn-sm btn-danger mt-2" @click="deleteEvent(event.id)"><i class="fa-solid fa-trash" style="color: #ffffff;"></i></button>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
           </div>
         </div>
       </div>
