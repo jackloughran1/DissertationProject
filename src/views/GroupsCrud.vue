@@ -9,45 +9,39 @@
     <div class="row mt-5">
       <div class="col-md-12">
         <h2 class="text-center mt-4">All Groups</h2>
-        <div class="input-group mb-3">
-          <input type="text" v-model="searchQuery" @input="searchGroups" class="form-control" placeholder="Search Group" />
-          <button class="btn btn-primary" @click="searchGroups">
-            <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
-          </button>
-        </div>
         <div class="table-responsive">
-        <table class="table table-striped text-center">
-          <thead>
-            <tr>
-              <th>Access Code</th>
-              <th>Group</th>
-              <th>Team</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="group in groups" :key="group.id">
-              <td>{{ group.accessCode }}</td>
-              <td>{{ group.groupName }}</td>
-              <td>{{ group.teamName }}</td>
-              <td>
-                <button class="btn btn-sm btn-warning mx-2" @click="editGroup(group)"><i class="fa-solid fa-pen"
-                    style="color: #ffffff;"></i></button>
-                <button class="btn btn-sm btn-danger" @click="deleteGroup(group.id)"><i class="fa-solid fa-trash"
-                    style="color: #ffffff;"></i></button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <table class="table table-striped text-center">
+            <thead>
+              <tr>
+                <th>Access Code</th>
+                <th>Group</th>
+                <th>Team</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="group in groups" :key="group.id">
+                <td>{{ group.accessCode }}</td>
+                <td>{{ group.groupName }}</td>
+                <td>{{ group.teamName }}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning mx-2" @click="editGroup(group)"><i class="fa-solid fa-pen"
+                      style="color: #ffffff;"></i></button>
+                  <button class="btn btn-sm btn-danger" @click="deleteGroup(group.id)"><i class="fa-solid fa-trash"
+                      style="color: #ffffff;"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+    <div class="text-center">
+      <button type="button" class="btn btn-primary btn-lg" @click="openForm()">
+        Add
+      </button>
     </div>
-        <div class="text-center">
-          <button type="button" class="btn btn-primary btn-lg" @click="openForm()">
-            Add 
-          </button>
-        </div>
-      
+
     <!-- Form to edit user fields -->
     <div v-if="selectedGroup">
       <div class="row mt-5">
@@ -73,41 +67,41 @@
     </div>
 
     <div v-if="showForm">
-    <div class="row mt-5">
-      <div class="col-md-6 mx-auto">
-        <h3 class="text-center">Add</h3>
-        <form class="text-center mx-auto" @submit.prevent="addNewGroup">
-          <div class="form-group row">
-            <label for="accessCode" class="col-sm-2 col-form-label">Access Code:</label>
-            <div class="col-sm-6">
-              <input type="text" class="form-control" v-model="newGroup.accessCode" required />
+      <div class="row mt-5">
+        <div class="col-md-6 mx-auto">
+          <h3 class="text-center">Add</h3>
+          <form class="text-center mx-auto" @submit.prevent="addNewGroup">
+            <div class="form-group row">
+              <label for="accessCode" class="col-sm-2 col-form-label">Access Code:</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" v-model="newGroup.accessCode" required />
+              </div>
+              <div class="col-sm-2">
+                <button type="button" class="btn btn-primary" @click="generateAccessCode(6)">
+                  <i class="fa-solid fa-shuffle" style="color: #ffffff;"></i>
+                </button>
+              </div>
             </div>
-            <div class="col-sm-2">
-              <button type="button" class="btn btn-primary" @click="generateAccessCode(6)">
-                <i class="fa-solid fa-shuffle" style="color: #ffffff;"></i>
-              </button>
+
+            <div class="form-group">
+              <label for="groupName" class="form-label">Group Name:</label>
+              <input type="text" class="form-control" v-model="newGroup.groupName" required />
             </div>
-          </div>
 
-          <div class="form-group">
-            <label for="groupName" class="form-label">Group Name:</label>
-            <input type="text" class="form-control" v-model="newGroup.groupName" required />
-          </div>
+            <div class="form-group">
+              <label for="teamName" class="form-label">Team Name:</label>
+              <input type="text" class="form-control" v-model="newGroup.teamName" required />
+            </div>
 
-          <div class="form-group">
-            <label for="teamName" class="form-label">Team Name:</label>
-            <input type="text" class="form-control" v-model="newGroup.teamName" required />
-          </div>
-
-          <button type="submit" class="btn btn-success mx-2 my-2">
-            <i class="fa-solid fa-check" style="color: #ffffff;"></i>
-          </button>
-          <button type="button" class="btn btn-danger" @click="closeForm">
-            <i class="fa-solid fa-ban" style="color: #ffffff;"></i>
-          </button>
-        </form>
+            <button type="submit" class="btn btn-success mx-2 my-2">
+              <i class="fa-solid fa-check" style="color: #ffffff;"></i>
+            </button>
+            <button type="button" class="btn btn-danger" @click="closeForm">
+              <i class="fa-solid fa-ban" style="color: #ffffff;"></i>
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
@@ -208,27 +202,6 @@ export default {
       this.fetchGroups();
     },
 
-    //     async searchGroup() {
-    //   const db = getFirestore();
-    //   const groupsRef = collection(db, 'groups');
-
-    //   try {
-    //     // Create a Firestore query to filter users based on the searchQuery
-    //     const querySnapshot = await getDocs(query(groupsRef, 
-    //       where('firstName', '>=', this.searchQuery),
-    //       where('firstName', '<=', this.searchQuery + '\uf8ff'), // '\uf8ff' is a placeholder to include all possible characters
-    //       where('lastName', '>=', this.searchQuery),
-    //       where('lastName', '<=', this.searchQuery + '\uf8ff')
-    //     ));
-    //     this.users = querySnapshot.docs.map(doc => ({
-    //       id: doc.id,
-    //       ...doc.data()
-    //     }));
-    //   } catch (error) {
-    //     console.error('Error searching users:', error);
-    //   }
-    // },
-
     // Method to cancel editing and clear the selected user
     cancelEdit() {
       this.selectedGroup = null;
@@ -248,7 +221,7 @@ export default {
 
       }
     },
-
+    // adding method
     async addNewGroup() {
       const db = getFirestore();
       const groupsRef = collection(db, 'groups')
@@ -264,17 +237,17 @@ export default {
         console.error('Error adding the group:', error)
       }
     },
-// need to make it so only one access code can be made, no repeats
-    generateAccessCode(length){
+    // need to make it so only one access code can be made, no repeats
+    generateAccessCode(length) {
       let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    this.newGroup.accessCode= result;
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const charactersLength = characters.length;
+      let counter = 0;
+      while (counter < length) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
+      }
+      this.newGroup.accessCode = result;
     }
   },
 
@@ -289,4 +262,5 @@ export default {
 .table {
   margin: 20px;
 
-}</style>
+}
+</style>

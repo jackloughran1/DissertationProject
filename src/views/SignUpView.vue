@@ -7,7 +7,6 @@
           <div class="row">
             <div class="col-lg-6">
               <div class="card-body p-md-5 mx-md-4">
-
                 <div class="text-center">
                   <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
                     <path
@@ -18,59 +17,48 @@
                   </svg>
                   <h4 class="mt-2 mb-5 pb-1">We are TimeTrackr</h4>
                 </div>
-
                 <form class="user" @submit.prevent="signup">
                   <p class="text-center"><b>Create a new account</b></p>
-
                   <div class="form-outline text-center mb-4">
                     <input type="text" id="firstName" class="form-control" v-model="firstName" />
                     <label class="form-label"><b>First Name</b></label>
                   </div>
-
                   <div class="form-outline text-center mb-4">
                     <input type="text" id="lastName" class="form-control" v-model="lastName" />
                     <label class="form-label"><b>Last Name</b></label>
                   </div>
-
                   <div class="form-outline text-center mb-4">
                     <input type="email" id="email" class="form-control" v-model="email" />
                     <label class="form-label"><b>Email</b></label>
                   </div>
-
                   <div class="form-outline text-center mb-4">
                     <input type="password" id="password" class="form-control" v-model="password" />
                     <label class="form-label"><b>Password</b></label>
                   </div>
-
                   <div class="form-outline text-center mb-4">
                     <input type="password" id="confirm" class="form-control" v-model="confirmPassword" />
                     <label class="form-label"><b>Confirm Password</b></label>
                   </div>
-
                   <div class="text-danger text-center mb-3">
                     {{ errorPassword }}
                   </div>
-
                   <div class="form-outline text-center mb-4">
                     <input type="accesscode" id="access" class="form-control" v-model="accessCode" />
                     <label class="form-label"><b>Access Code</b></label>
                   </div>
-
                   <div class="text-center pt-1 mb-5 pb-1">
-                    <button class="btn btn-warning btn-block mb-3 mx-3" type="submit" style="background-color: #039be5; border: none;"><b>Sign up</b></button>
+                    <button class="btn btn-warning btn-block mb-3 mx-3" type="submit"
+                      style="background-color: #039be5; border: none;"><b>Sign up</b></button>
                   </div>
-
                   <div class="text-center text-danger">
                     {{ errorMessage }}
                   </div>
-
                   <div class="d-flex align-items-center justify-content-center pb-4">
                     <p class="mb-0 me-2"><b>Already have an account?</b></p>
-                    <a href="/login"><button type="button" class="btn btn-outline-warning" style="background-color: #039be5; border: none;">Log in</button></a>
+                    <a href="/login"><button type="button" class="btn btn-outline-warning"
+                        style="background-color: #039be5; border: none;">Log in</button></a>
                   </div>
-
                 </form>
-
               </div>
             </div>
             <div class="col-lg-6 d-flex align-items-center signup-color">
@@ -92,8 +80,9 @@
 <script>
 // imports needed
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+// importing firebase directly was not working
 import { getFirestore, collection, doc, setDoc, query, where, getDocs } from 'firebase/firestore'
-
+// v-model
 export default {
   name: 'SignUpView',
   data() {

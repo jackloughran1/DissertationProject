@@ -9,12 +9,6 @@
     <div class="row mt-5">
       <div class="col-md-12">
         <h2 class="text-center mt-4">All Events</h2>
-        <div class="input-group mb-3">
-          <input type="text" v-model="searchQuery" @input="searchEvents" class="form-control" placeholder="Search Events" />
-          <button class="btn btn-primary" @click="searchEvents">
-            <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
-          </button>
-        </div>
         <div class="table-responsive">
             <table class="table table-striped text-center">
               <thead>
@@ -142,6 +136,7 @@ export default {
   },
 
   computed: {
+    //store
     ...mapGetters(['isAdmin']),
     sidebarWidth() {
       return this.sidebarCollapsed ? "0" : "250px";
@@ -169,7 +164,7 @@ export default {
     toggleSidebar(collapsed) {
       this.sidebarCollapsed = collapsed;
     },
-
+// getting data
     async fetchEvent(){
 
       const db = getFirestore();
@@ -188,7 +183,7 @@ export default {
     },
 
 
-
+// delete method
     async deleteEvent(eventId) {
       const db = getFirestore();
       const eventRef = doc(db, 'events', eventId);

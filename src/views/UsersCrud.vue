@@ -32,7 +32,7 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.role }}</td>
                 <td>
-                  <button class="btn btn-sm btn-warning mx-2" @click="editUser(user)">
+                  <button class="btn btn-sm btn-warning mx-2 mt-2" @click="editUser(user)">
                     <i class="fa-solid fa-pen" style="color: #ffffff;"></i>
                   </button>
                   <button class="btn btn-sm btn-danger mt-2" @click="deleteUser(user.id)">
@@ -89,7 +89,7 @@
         </div>
       </div>
     </div>
-
+<!--Form for adding-->
     <div v-if="showForm">
       <div class="row mt-5">
         <div class="col-md-6 mx-auto">
@@ -157,12 +157,14 @@ export default {
       isManager: false,
       showForm: false,
       selectedUser: null,
+       searchQuery: "",
       newUser: {
         firstName: "",
         lastName: "",
         email: "",
         role: "",
-      }
+      },
+     
     };
   },
 
@@ -224,23 +226,22 @@ export default {
 
       this.fetchUsers();
     },
-
+// search bar method
     async searchUsers() {
       const db = getFirestore();
       const usersRef = collection(db, 'users');
 
       try {
-        // Create a Firestore query to filter users based on the searchQuery
-        const querySnapshot = await getDocs(query(usersRef,
-      where('firstName', 'array-contains', this.searchQuery.toLowerCase()),
-      where('lastName', 'array-contains', this.searchQuery.toLowerCase())
-    ));
+        const search = this.searchQuery.trim();
+
+        const querySnapshot = await getDocs(query(usersRef, where('firstName', '==', search), where('lastName', '==', search)));
+
         this.users = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-      } catch (error) {
-        console.error('Error searching users:', error);
+      } catch (error){
+        console.error(error);
       }
 
       

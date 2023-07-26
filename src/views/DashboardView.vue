@@ -1,13 +1,13 @@
 <template>
   <div>
+    <!--admin only view-->
     <div v-if="isAdmin">
       <TopbarComponent v-if="isAdmin" :firstName="firstName" :lastName="lastName"
         @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
-
       <SidebarComponent v-if="isAdmin" :isManager="isManager" :sidebarCollapsed="sidebarCollapsed"
         class="flex-shrink-0" />
-
-      <div class="admin-container container-fluid mt-5 d-flex flex-column min-vh-100 justify-content-center align-items-center">
+      <div
+        class="admin-container container-fluid mt-5 d-flex flex-column min-vh-100 justify-content-center align-items-center">
         <h1 class="text-center my-3">Access Database</h1>
         <div class="row justify-content-center">
           <div class="col-sm-3">
@@ -17,8 +17,9 @@
                 <h4 class="card-title my-3">User's</h4>
                 <span>
                   <a href="/userscrud">
-                  <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></button>
-                </a>
+                    <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye"
+                        style="color: #ffffff;"></i></button>
+                  </a>
                 </span>
               </div>
             </div>
@@ -30,8 +31,9 @@
                 <h4 class="card-title my-3">Event's</h4>
                 <span>
                   <a href="/eventscrud">
-                  <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></button>
-                </a>
+                    <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye"
+                        style="color: #ffffff;"></i></button>
+                  </a>
                 </span>
               </div>
             </div>
@@ -43,8 +45,9 @@
                 <h4 class="card-title my-3">Group's</h4>
                 <span>
                   <a href="/groupscrud">
-                  <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></button>
-                </a>
+                    <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye"
+                        style="color: #ffffff;"></i></button>
+                  </a>
                 </span>
               </div>
             </div>
@@ -93,6 +96,7 @@ import axios from 'axios';
 export default {
   name: "DashboardView",
 
+  // bringing in components
   components: {
     TopbarComponent,
     SidebarComponent,
@@ -102,9 +106,7 @@ export default {
   data() {
     return {
       sidebarCollapsed: false,
-      // storage for events
       events: [],
-
       firstName: "",
       lastName: "",
       isManager: false,
@@ -138,7 +140,7 @@ export default {
 
       return new Date(date).toLocaleString('en-UK', options)
     },
-
+    // for user to see event info formatted nicer
     async handleEventClick(eventInfo) {
       const apiKey = '482c2d29fb6a4cdbb046f187833039b5';
       const clickedEvent = eventInfo.event;
@@ -203,7 +205,7 @@ export default {
     });
 
     calendar.render();
-
+    // for event pulling onto full calander
     onSnapshot(userDocRef, (snapshot) => {
       if (snapshot.exists()) {
         const user = snapshot.data();
@@ -246,13 +248,7 @@ export default {
       }
     });
   },
-
-
-
 }
-
-
-
 
 
 </script>
@@ -474,24 +470,23 @@ export default {
 
 .admin-container {
   padding-top: 60px;
-  
+
 }
 
 .card {
- margin: 50px;
- padding: 80px;
- 
+  margin: 50px;
+  padding: 80px;
+
 }
 
-.icon{
+.icon {
   font-size: 36px;
 }
 
 
-.btn{
+.btn {
   margin-top: 20px;
   font-size: 20px;
   width: 70px;
 }
-
 </style>

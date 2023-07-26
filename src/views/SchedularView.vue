@@ -31,7 +31,8 @@
                 <label for="timeStampEnd" class="form-label"><b>End Time</b></label>
                 <input type="datetime-local" class="form-control" id="timeStampEnd" v-model="newEvent.timeStampEnd" />
               </div>
-              <button type="submit" class="btn btn-primary"><i class="fa-regular fa-square-plus" style="color: #ffffff;"></i></button>
+              <button type="submit" class="btn btn-primary"><i class="fa-regular fa-square-plus"
+                  style="color: #ffffff;"></i></button>
             </form>
           </div>
         </div>
@@ -55,8 +56,10 @@
                   <td>{{ formatDateTime(event.timeStampStart) }}</td>
                   <td>{{ formatDateTime(event.timeStampEnd) }}</td>
                   <td>
-                    <button class="btn btn-sm btn-warning mx-2" @click="editEvent(event)"><i class="fa-solid fa-pen" style="color: #ffffff;"></i></button>
-                    <button class="btn btn-sm btn-danger" @click="deleteEvent(event.id)"><i class="fa-solid fa-trash" style="color: #ffffff;"></i></button>
+                    <button class="btn btn-sm btn-warning mx-2" @click="editEvent(event)"><i class="fa-solid fa-pen"
+                        style="color: #ffffff;"></i></button>
+                    <button class="btn btn-sm btn-danger" @click="deleteEvent(event.id)"><i class="fa-solid fa-trash"
+                        style="color: #ffffff;"></i></button>
                   </td>
                 </tr>
               </tbody>
@@ -95,8 +98,10 @@
             <input type="datetime-local" class="form-control" id="timeStampEnd" v-model="changeEvent.timeStampEnd" />
           </div>
           <div class="mb-3">
-            <button type="submit" class="btn btn-warning mx-2 my-2"><i class="fa-solid fa-check" style="color: #ffffff;"></i></button>
-            <button type="button" class="btn btn-danger" @click="cancelEditEvent"><i class="fa-solid fa-ban" style="color: #ffffff;"></i></button>
+            <button type="submit" class="btn btn-warning mx-2 my-2"><i class="fa-solid fa-check"
+                style="color: #ffffff;"></i></button>
+            <button type="button" class="btn btn-danger" @click="cancelEditEvent"><i class="fa-solid fa-ban"
+                style="color: #ffffff;"></i></button>
           </div>
         </form>
       </div>
@@ -151,7 +156,7 @@ export default {
         long: '',
         timeStampStart: '',
         timeStampEnd: '',
-      
+
       },
       events: [],
     };
@@ -167,7 +172,7 @@ export default {
     toggleSidebar(collapsed) {
       this.sidebarCollapsed = collapsed;
     },
-    // edding event method to database
+    // adding event method to database
     addEvent() {
       const db = getFirestore();
       const eventsCollection = collection(db, 'events');
@@ -214,36 +219,36 @@ export default {
     },
     // edit event method for the form
     editEvent(event) {
-  this.isEditing = true;
+      this.isEditing = true;
 
 
-  const db = getFirestore();
-  const auth = getAuth();
-  const currentUser = auth.currentUser;
-  const userCollection = collection(db, 'users');
-  const userDocRef = doc(userCollection, currentUser.uid);
+      const db = getFirestore();
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      const userCollection = collection(db, 'users');
+      const userDocRef = doc(userCollection, currentUser.uid);
 
-  getDoc(userDocRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const user = snapshot.data();
+      getDoc(userDocRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const user = snapshot.data();
 
-        // need user to access groupId - store user data in state??
-        this.changeEvent.id = event.id;
-        this.changeEvent.eventName = event.eventName;
-        this.changeEvent.lat = event.location.lat;
-        this.changeEvent.long = event.location.long;
-        this.changeEvent.timeStampStart = event.timeStampStart.toISOString().slice(0, 16);
-        this.changeEvent.timeStampEnd = event.timeStampEnd.toISOString().slice(0, 16);
-        this.changeEvent.groupId = user.groupId;
-      } else {
-        console.log('User not found');
-      }
-    })
-    .catch((error) => {
-      console.error('Error fetching user data:', error);
-    });
-},
+            // need user to access groupId - store user data in state??
+            this.changeEvent.id = event.id;
+            this.changeEvent.eventName = event.eventName;
+            this.changeEvent.lat = event.location.lat;
+            this.changeEvent.long = event.location.long;
+            this.changeEvent.timeStampStart = event.timeStampStart.toISOString().slice(0, 16);
+            this.changeEvent.timeStampEnd = event.timeStampEnd.toISOString().slice(0, 16);
+            this.changeEvent.groupId = user.groupId;
+          } else {
+            console.log('User not found');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user data:', error);
+        });
+    },
 
     // closes form if no changes need to be made
     cancelEditEvent() {
@@ -264,25 +269,25 @@ export default {
 
       const db = getFirestore();
       const eventsCollection = collection(db, 'events');
-      
 
-      
+
+
 
       // Update the event with the edited data
       const updatedEvent = {
         eventName: this.changeEvent.eventName,
         location: new GeoPoint(Number(this.changeEvent.lat), Number(this.changeEvent.long)),
-        groupId: this.changeEvent.groupId, 
+        groupId: this.changeEvent.groupId,
         timeStampStart: Timestamp.fromDate(new Date(this.changeEvent.timeStampStart)),
         timeStampEnd: Timestamp.fromDate(new Date(this.changeEvent.timeStampEnd)),
       };
 
       try {
-        
+
         const eventDocRef = doc(eventsCollection, this.changeEvent.id);
         setDoc(eventDocRef, updatedEvent);
 
-        
+
         this.changeEvent = {
           id: '',
           eventName: '',
@@ -294,7 +299,7 @@ export default {
         this.isEditing = false;
       } catch (error) {
         console.error('Error updating event:', error);
-     
+
       }
 
     },
@@ -303,7 +308,7 @@ export default {
       return date.toLocaleString();
     },
   },
- // created() useful for API
+  // created() useful for API
   created() {
     const apiKey = '482c2d29fb6a4cdbb046f187833039b5';
 
@@ -368,5 +373,4 @@ export default {
 .eventForm {
 
   position: relative;
-}
-</style>
+}</style>

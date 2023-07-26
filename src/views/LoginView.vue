@@ -68,11 +68,12 @@
 </template>
 
 <script>
-import { getAuth, signInWithEmailAndPassword} from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 
 export default {
   name: 'LoginView',
+  //v-model
   data() {
     return {
       email: '',
@@ -81,6 +82,7 @@ export default {
     };
   },
   methods: {
+    // asynchronous login
     async login() {
 
       const email = this.email;
