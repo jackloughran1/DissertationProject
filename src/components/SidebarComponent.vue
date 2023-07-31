@@ -40,9 +40,9 @@
             </a>
           </li>
           <li>
-            <a href="#">
+            <a href="carpool">
               <span class="icon"><i class="fa-solid fa-car" style="color: #ffffff;"></i></span>
-              <span class="text">Car Share (if time)</span>
+              <span class="text">Car Share</span>
             </a>
           </li>
           <li>

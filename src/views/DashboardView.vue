@@ -64,13 +64,15 @@
           <h1 class="text-center pt-5 my-4">{{ firstName }}'s Calendar View</h1>
           <div id="calendar">
           </div>
-          <div class="event-details text-center mt-3" v-if="selectedEvent">
-            <i class="fa-solid fa-futbol mb-3" v-if="selectedEvent.title === 'Game'"></i>
-            <i class="fa-solid fa-person-walking mb-3" v-else></i>
-            <h2 class="fs-5">{{ selectedEvent.title }}</h2>
-            <p class="fs-6">Start: {{ selectedEvent.start }}</p>
-            <p class="fs-6">End: {{ selectedEvent.end }}</p>
-            <p class="fs-6">Location: {{ selectedEvent.location }}</p>
+          <div class="modal" v-if="selectedEvent">
+            <div class="modal-content text-center text-white">
+              <span class="close" @click="closeModal">&times;</span>
+              <h2>Event Details</h2>
+              <p><strong>Title:</strong> {{ selectedEvent.title }}</p>
+              <p><strong>Start:</strong> {{ selectedEvent.start }}</p>
+              <p><strong>End:</strong> {{ selectedEvent.end }}</p>
+              <p><strong>Location:</strong> {{ selectedEvent.location }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -125,6 +127,10 @@ export default {
   methods: {
     toggleSidebar(collapsed) {
       this.sidebarCollapsed = collapsed;
+    },
+
+    closeModal() {
+      this.selectedEvent = null;
     },
 
     formatDate(date) {
@@ -488,5 +494,35 @@ export default {
   margin-top: 20px;
   font-size: 20px;
   width: 70px;
+}
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color:#039be5;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 10px;
+  
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
 }
 </style>

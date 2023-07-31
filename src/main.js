@@ -2,6 +2,8 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import 'bootstrap/dist/css/bootstrap.css';
+import 'jquery';
+import 'popper.js';
 import { initializeApp} from 'firebase/app'
 import '@fortawesome/fontawesome-free/css/all.css'
 import store from './store/store.js'
@@ -25,7 +27,7 @@ const app = createApp(App);
 
 // Initialize authentication before mounting the app
 store.dispatch('initializeAuth').then(() => {
-  // Mount the app and start the router
+  // Mount the app and start the router/store
   app
     .use(router)
     .use(store)

@@ -308,7 +308,7 @@ export default {
       return date.toLocaleString();
     },
   },
-  // created() useful for API
+  // created() useful for APIt
   created() {
     const apiKey = '482c2d29fb6a4cdbb046f187833039b5';
 

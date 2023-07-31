@@ -7,6 +7,7 @@ import UnauthorizedView from '@/views/UnauthorizedView';
 import UsersCrud from '@/views/UsersCrud';
 import EventsCrud from '@/views/EventsCrud';
 import GroupsCrud from '@/views/GroupsCrud';
+import CarPool from '@/views/CarPoolView';
 import { getAuth } from 'firebase/auth';
 import store from '../store/store.js'
 
@@ -75,8 +76,14 @@ const routes = [
     meta: {requiresAuth:true}, 
     beforeEnter: requiresAuth
   },
+  {
+    path: '/carpool',
+    name: 'carPool',
+    component: CarPool,
+    meta: {requiresAuth:true}, 
+    beforeEnter: requiresAuth
   
-
+  }
   
 ];
 
