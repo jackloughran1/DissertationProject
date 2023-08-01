@@ -3,46 +3,48 @@
     <div v-if="isAdmin">
       <TopbarComponent :firstName="firstName" :lastName="lastName" @toggle-sidebar="toggleSidebar(!sidebarCollapsed)" />
       <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" class="flex-shrink-0" />
-      
+
     </div>
 
     <div class="row mt-5">
       <div class="col-md-12">
         <h2 class="text-center mt-4">All Events</h2>
         <div class="table-responsive">
-            <table class="table table-striped text-center">
-              <thead>
-                <tr>
-                  <th>Event Name</th>
-                  <th>Location</th>
-                  <th>Starts</th>
-                  <th>Finishes</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="event in events" :key="event.id">
-                  <td>{{ event.eventName }}</td>
-                  <td>{{ event.location }}</td>
-                  <td>{{ formatDateTime(event.timeStampStart) }}</td>
-                  <td>{{ formatDateTime(event.timeStampEnd) }}</td>
-                  <td>
-                    <button class="btn btn-sm btn-warning mx-2" @click="editEvent(event)"><i class="fa-solid fa-pen" style="color: #ffffff;"></i></button>
-                    <button class="btn btn-sm btn-danger mt-2" @click="deleteEvent(event.id)"><i class="fa-solid fa-trash" style="color: #ffffff;"></i></button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          </div>
+          <table class="table table-striped text-center">
+            <thead>
+              <tr>
+                <th>Event Name</th>
+                <th>Location</th>
+                <th>Starts</th>
+                <th>Finishes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="event in events" :key="event.id">
+                <td>{{ event.eventName }}</td>
+                <td>{{ event.location }}</td>
+                <td>{{ formatDateTime(event.timeStampStart) }}</td>
+                <td>{{ formatDateTime(event.timeStampEnd) }}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning mx-2" @click="editEvent(event)"><i class="fa-solid fa-pen"
+                      style="color: #ffffff;"></i></button>
+                  <button class="btn btn-sm btn-danger mt-2" @click="deleteEvent(event.id)"><i class="fa-solid fa-trash"
+                      style="color: #ffffff;"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-
-      <div class="text-center">
-      <button type="button" class="btn btn-primary btn-lg" @click="openForm()">
-        Add </button>
     </div>
-   
+  </div>
+
+  <div class="text-center">
+    <button type="button" class="btn btn-primary btn-lg" @click="openForm()">
+      Add </button>
+  </div>
+
   <!--Conditional edit form after manager selects edit button - cwill componentise later if time permits-->
   <div v-if="selectedEvent" class="edit-form">
     <div class="row mt-5">
@@ -65,39 +67,42 @@
           </div>
           <div class="mb-3">
             <label for="timeStampStart" class="form-label"><b>Start Time</b></label>
-            <input type="datetime-local" class="form-control" id="timeStampStart" v-model="selectedEvent.timeStampStart" />
+            <input type="datetime-local" class="form-control" id="timeStampStart"
+              v-model="selectedEvent.timeStampStart" />
           </div>
           <div class="mb-3">
             <label for="timeStampEnd" class="form-label"><b>End Time</b></label>
             <input type="datetime-local" class="form-control" id="timeStampEnd" v-model="selectedEvent.timeStampEnd" />
           </div>
           <div class="mb-3">
-            <button type="submit" class="btn btn-success mx-2 my-2"><i class="fa-solid fa-check" style="color: #ffffff;"></i></button>
-            <button type="button" class="btn btn-danger" @click="cancelEditEvent"><i class="fa-solid fa-ban" style="color: #ffffff;"></i></button>
+            <button type="submit" class="btn btn-success mx-2 my-2"><i class="fa-solid fa-check"
+                style="color: #ffffff;"></i></button>
+            <button type="button" class="btn btn-danger" @click="cancelEditEvent"><i class="fa-solid fa-ban"
+                style="color: #ffffff;"></i></button>
           </div>
         </form>
       </div>
     </div>
-    </div>
+  </div>
 
-    <div v-if="showForm">
-      <div class="row mt-5">
-        <div class="col-md-6 mx-auto">
-          <h3 class="text-center">Add</h3>
-          <form class="text-center mx-auto" @submit.prevent="addNewEvent">
-            <div class="form-group">
-              <label for="eventName" class="form-label">Event Name</label>
-              <input type="text" class="form-control" v-model="newEvent.eventName" required />
-            </div>
-            <div class="form-group">
-              <label for="lat" class="form-label">Latitude</label>
-              <input type="text" class="form-control" v-model="newEvent.lat" required />
-            </div>
-            <div class="form-group">
-              <label for="long" class="form-label">Longtitude</label>
-              <input type="text" class="form-control" v-model="newEvent.long" required />
-            </div>
-            <div class="mb-3">
+  <div v-if="showForm">
+    <div class="row mt-5">
+      <div class="col-md-6 mx-auto">
+        <h3 class="text-center">Add</h3>
+        <form class="text-center mx-auto" @submit.prevent="addNewEvent">
+          <div class="form-group">
+            <label for="eventName" class="form-label">Event Name</label>
+            <input type="text" class="form-control" v-model="newEvent.eventName" required />
+          </div>
+          <div class="form-group">
+            <label for="lat" class="form-label">Latitude</label>
+            <input type="text" class="form-control" v-model="newEvent.lat" required />
+          </div>
+          <div class="form-group">
+            <label for="long" class="form-label">Longtitude</label>
+            <input type="text" class="form-control" v-model="newEvent.long" required />
+          </div>
+          <div class="mb-3">
             <label for="timeStampStart" class="form-label"><b>Start Time</b></label>
             <input type="datetime-local" class="form-control" id="timeStampStart" v-model="newEvent.timeStampStart" />
           </div>
@@ -106,25 +111,24 @@
             <input type="datetime-local" class="form-control" id="timeStampEnd" v-model="newEvent.timeStampEnd" />
           </div>
 
-            <button type="submit" class="btn btn-success mx-2 my-2">
-              <i class="fa-solid fa-check" style="color: #ffffff;"></i>
-            </button>
-            <button type="button" class="btn btn-danger" @click="closeForm">
-              <i class="fa-solid fa-ban" style="color: #ffffff;"></i>
-            </button>
-          </form>
-        </div>
+          <button type="submit" class="btn btn-success mx-2 my-2">
+            <i class="fa-solid fa-check" style="color: #ffffff;"></i>
+          </button>
+          <button type="button" class="btn btn-danger" @click="closeForm">
+            <i class="fa-solid fa-ban" style="color: #ffffff;"></i>
+          </button>
+        </form>
       </div>
     </div>
-  
+  </div>
 </template>
   
 <script>
 import SidebarComponent from '../components/SidebarComponent.vue';
 import TopbarComponent from '../components/TopbarComponent.vue';
 import { mapGetters } from 'vuex';
-import { getAuth} from 'firebase/auth'
-import { getFirestore, collection, doc, deleteDoc, getDocs, getDoc, GeoPoint, Timestamp, setDoc, updateDoc} from 'firebase/firestore';
+import { getAuth } from 'firebase/auth'
+import { getFirestore, collection, doc, deleteDoc, getDocs, getDoc, GeoPoint, Timestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 
 export default {
@@ -155,7 +159,7 @@ export default {
         long: '',
         timeStampStart: '',
         timeStampEnd: '',
-      },    
+      },
       events: [],
     };
   },
@@ -164,8 +168,8 @@ export default {
     toggleSidebar(collapsed) {
       this.sidebarCollapsed = collapsed;
     },
-// getting data
-    async fetchEvent(){
+    // getting data
+    async fetchEvent() {
 
       const db = getFirestore();
       const eventsRef = collection(db, 'events');
@@ -183,7 +187,7 @@ export default {
     },
 
 
-// delete method
+    // delete method
     async deleteEvent(eventId) {
       const db = getFirestore();
       const eventRef = doc(db, 'events', eventId);
@@ -205,7 +209,7 @@ export default {
     // closes form if no changes need to be made
     cancelEditEvent() {
 
-      this.selectedEvent=false;
+      this.selectedEvent = false;
 
     },
 
@@ -231,7 +235,7 @@ export default {
       return date.toDate();
     },
 
-    
+
     openForm() {
       this.showForm = true;
     },
@@ -290,7 +294,7 @@ export default {
     },
   },
 
-  created(){
+  created() {
 
     this.fetchEvent();
   }
@@ -309,5 +313,4 @@ export default {
 .eventForm {
 
   position: relative;
-}
-</style>
+}</style>

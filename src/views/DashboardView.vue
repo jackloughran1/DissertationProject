@@ -495,6 +495,7 @@ export default {
   font-size: 20px;
   width: 70px;
 }
+
 .modal {
   display: block;
   position: fixed;
@@ -507,14 +508,14 @@ export default {
 }
 
 .modal-content {
-  background-color:#039be5;
+  background-color: #039be5;
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
   max-width: 500px;
   border-radius: 10px;
-  
+
 }
 
 .close {

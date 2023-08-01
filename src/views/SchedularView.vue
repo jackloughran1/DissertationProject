@@ -113,20 +113,7 @@
 import TopbarComponent from '../components/TopbarComponent.vue';
 import SidebarComponent from '../components/SidebarComponent.vue';
 import { getAuth } from 'firebase/auth';
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  doc,
-  where,
-  query,
-  setDoc,
-  getDoc,
-  Timestamp,
-  GeoPoint,
-  orderBy,
-  deleteDoc,
-} from 'firebase/firestore';
+import {getFirestore,collection,onSnapshot,doc,where,query,setDoc,getDoc,Timestamp,GeoPoint,orderBy,deleteDoc,} from 'firebase/firestore';
 import axios from 'axios';
 
 export default {
@@ -373,4 +360,5 @@ export default {
 .eventForm {
 
   position: relative;
-}</style>
+}
+</style>

@@ -1,19 +1,27 @@
 <template>
   <div class="topbar">
     <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-        <path
-          d="M16 1a14.86 14.86 0 0 0-9.33 3.26L6 4.83V2a1 1 0 0 0-2 0v5a1 1 0 0 0 1 1h5a1 1 0 0 0 0-2H7.71l.23-.2A12.86 12.86 0 0 1 16 3 13 13 0 1 1 3 16a1 1 0 0 0-2 0A15 15 0 1 0 16 1z"
-          style="fill:#039be5" />
-        <path d="m19.79 21.21-4.5-4.5A1 1 0 0 1 15 16V7a1 1 0 0 1 2 0v8.59l4.21 4.2a1 1 0 0 1-1.42 1.42z"
-          style="fill:#ff9a03" />
-      </svg>
+      <path
+        d="M16 1a14.86 14.86 0 0 0-9.33 3.26L6 4.83V2a1 1 0 0 0-2 0v5a1 1 0 0 0 1 1h5a1 1 0 0 0 0-2H7.71l.23-.2A12.86 12.86 0 0 1 16 3 13 13 0 1 1 3 16a1 1 0 0 0-2 0A15 15 0 1 0 16 1z"
+        style="fill:#039be5" />
+      <path d="m19.79 21.21-4.5-4.5A1 1 0 0 1 15 16V7a1 1 0 0 1 2 0v8.59l4.21 4.2a1 1 0 0 1-1.42 1.42z"
+        style="fill:#ff9a03" />
+    </svg>
     <div class="menu">
       <div class="hamburger" @click="$emit('toggle-sidebar')">
         <i class="fas fa-bars"></i>
       </div>
     </div>
     <div class="userProfile ms-auto">
-      <span class="notification"> <i class="fa-solid fa-bell fa-xl px-4" style="color: #ffffff;"> </i> </span>
+      <span class="notification" @click="toggleDropdown" :class="{ active: showDropdown }">
+        <i class="fa-solid fa-bell fa-xl px-4" style="color: #ffffff;"></i>
+      </span>
+      <!-- Dropdown content -->
+      <div v-if="showDropdown" class="dropdown-content">
+        <div v-for="(notification, index) in notifications" :key="index" class="notification-item">
+          {{ notification.text }}
+        </div>
+      </div>
       <span class="icon"> <i class="fa-solid fa-user fa-xl px-2" style="color: #ffffff;"></i></span>
       <span class="text px-2">{{ fullName }}</span>
     </div>
@@ -21,35 +29,56 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
 
-name: 'TopbarComponent',
-computed: {
-// getting userData
-  ...mapState({
-    userData: (state)=> state.userData,
-  }),
+  name: 'TopbarComponent',
 
-  fullName(){
-    return `${this.userData.firstName} ${this.userData.lastName}`;
+  data() {
+    return {
+      showDropdown: false,
+      //sample
+      notifications: [
+        { text: 'Notification 1' },
+        { text: 'Notification 2' },
+        { text: 'Notification 3' },
+      ],
+    }
   },
 
-},
-methods: {
-  emitToggleSidebar() {
-    this.$emit('toggle-sidebar');
-    
+
+  computed: {
+    // getting userData
+    ...mapState({
+      userData: (state) => state.userData,
+    }),
+
+    fullName() {
+      return `${this.userData.firstName} ${this.userData.lastName}`;
+    },
+
   },
-},
+  methods: {
+    emitToggleSidebar() {
+      this.$emit('toggle-sidebar');
+
+    },
+    toggleDropdown() {
+      this.showDropdown = !this.showDropdown;
+    },
+    closeDropdown() {
+     
+        this.showDropdown = false;
+      }
+    },
+  
 
 };
 </script>
 
 
 <style>
-
 .topbar {
   position: fixed;
   top: 0;
@@ -171,68 +200,37 @@ methods: {
   padding: 20px;
 }
 
-
-
-/*Calendar-styling */
-/* Calendar container */
-#calendar {
-  background-color: #ffffff;
-}
-
-/* Calendar header */
-.fc-header-toolbar {
-  background-color: #1d546f;
-  color: #fff;
-  padding: 10px;
-}
-
-.fc-header-toolbar .fc-button {
-  background-color: #007dc3 !important;
-  border-color: #000000 !important;
-  color: #fff;
-  font-weight: bold;
-  margin: 0 5px;
-}
-
-.fc-header-toolbar .fc-button:hover {
-  background-color: black !important;
-}
-
-/* Calendar views */
-.fc-view {
-  border-radius: 10px;
-  background-color: #ffffff;
-  padding: 10px;
-}
-
-/* Time slots */
-.fc-timegrid-slot-label {
-  font-weight: bold;
-}
-
-/* Event styles */
-.fc-event {
-  background-color: #d3a202;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  padding: 5px;
-  font-size: 12px;
+.notification{
   cursor: pointer;
 }
+.notification-item {
+  padding: 8px;
+  border-bottom: 1px solid #f5f5f5;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+}
+.notification-item:last-child {
+  border-bottom: none;
+}
+.notification-item:hover {
+  background-color: #479991;
+}
 
-.fc-event:hover {
-  background-color: #0d97d2;
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  right: 30;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  padding: 10px;
 }
 
 .userProfile {
   color: white;
   font-family: sans-serif;
   font-size: 16px;
-}
-
-.userProfile:hover {
-  color: rgb(24, 124, 216);
 }
 
 
