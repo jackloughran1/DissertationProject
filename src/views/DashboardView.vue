@@ -191,7 +191,7 @@ export default {
     const calendar = new Calendar(calendarEl, {
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       timeZone: 'local',
-      initialView: "timeGridFourDay",
+      initialView: "dayGridMonth",
       nowIndicator: true,
       selectable: true,
       views: {
