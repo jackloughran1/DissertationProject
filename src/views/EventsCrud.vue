@@ -1,131 +1,95 @@
 <template>
   <div>
-    <div v-if="isAdmin">
-      <TopbarComponent :firstName="firstName" :lastName="lastName" @toggle-sidebar="toggleSidebar(!sidebarCollapsed)" />
-      <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" class="flex-shrink-0" />
-
-    </div>
-
-    <div class="row mt-5">
-      <div class="col-md-12">
-        <h2 class="text-center mt-4">All Events</h2>
-        <div class="table-responsive">
-          <table class="table table-striped text-center">
-            <thead>
-              <tr>
-                <th>Event Name</th>
-                <th>Location</th>
-                <th>Starts</th>
-                <th>Finishes</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="event in events" :key="event.id">
-                <td>{{ event.eventName }}</td>
-                <td>{{ event.location }}</td>
-                <td>{{ formatDateTime(event.timeStampStart) }}</td>
-                <td>{{ formatDateTime(event.timeStampEnd) }}</td>
-                <td>
-                  <button class="btn btn-sm btn-warning mx-2" @click="editEvent(event)"><i class="fa-solid fa-pen"
-                      style="color: #ffffff;"></i></button>
-                  <button class="btn btn-sm btn-danger mt-2" @click="deleteEvent(event.id)"><i class="fa-solid fa-trash"
-                      style="color: #ffffff;"></i></button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <nav class="navbar navbar-dark bg-success justify-content-center">
+      <a class="navbar-brand" href="/"><i class="fas fa-solid fa-arrow-left"></i>Admin Dashboard</a>
+    </nav>
+    <div class="container mt-3">
+      <div class="card mb-5">
+        <div class="card-header">
+          Add a new event to the database
+        </div>
+        <div class="card-body">
+          <form class="form-inline" @submit.prevent="addNewEvent">
+            <div class="form-group">
+              <label class="label">Event Name</label>
+              <input v-model="newEvent.eventName" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
+            </div>
+            <div class="form-group">
+              <label class="label">Location</label>
+              <input v-model="newEvent.location" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
+            </div>
+            <div class="form-group">
+              <label class="label">Start Time</label>
+              <input v-model="newEvent.timeStampStart" type="datetime-local" class="form-control ml-sm-2 mr-sm-4 my-2"
+                required>
+            </div>
+            <div class="form-group">
+              <label class="label">End Time</label>
+              <input v-model="newEvent.timeStampEnd" type="datetime-local" class="form-control ml-sm-2 mr-sm-4 my-2"
+                required>
+            </div>
+            <div class="ml-auto text-right">
+              <button type="submit" class="btn btn-success my-2">Add</button>
+            </div>
+          </form>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="text-center">
-    <button type="button" class="btn btn-primary btn-lg" @click="openForm()">
-      Add </button>
-  </div>
-
-  <!--Conditional edit form after manager selects edit button - cwill componentise later if time permits-->
-  <div v-if="selectedEvent" class="edit-form">
-    <div class="row mt-5">
-      <div class="col-md-6 mx-auto">
-        <form class="eventForm text-center mx-auto">
-          <div class="mb-3">
-            <label for="eventName" class="form-label"><b>Event Name</b></label>
-            <input type="text" class="form-control" id="eventName" v-model="selectedEvent.eventName"
-              placeholder="Enter event name" />
-          </div>
-          <div class="mb-3">
-            <label for="locationLat" class="form-label"><b>Location (Lat)</b></label>
-            <input type="text" class="form-control" id="locationLat" v-model="selectedEvent.lat"
-              placeholder="Enter Latitude" />
-          </div>
-          <div class="mb-3">
-            <label for="locationLong" class="form-label"><b>Location (Long)</b></label>
-            <input type="text" class="form-control" id="locationLong" v-model="selectedEvent.long"
-              placeholder="Enter Longitude" />
-          </div>
-          <div class="mb-3">
-            <label for="timeStampStart" class="form-label"><b>Start Time</b></label>
-            <input type="datetime-local" class="form-control" id="timeStampStart"
-              v-model="selectedEvent.timeStampStart" />
-          </div>
-          <div class="mb-3">
-            <label for="timeStampEnd" class="form-label"><b>End Time</b></label>
-            <input type="datetime-local" class="form-control" id="timeStampEnd" v-model="selectedEvent.timeStampEnd" />
-          </div>
-          <div class="mb-3">
-            <button type="submit" class="btn btn-success mx-2 my-2"><i class="fa-solid fa-check"
-                style="color: #ffffff;"></i></button>
-            <button type="button" class="btn btn-danger" @click="cancelEditEvent"><i class="fa-solid fa-ban"
-                style="color: #ffffff;"></i></button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div v-if="showForm">
-    <div class="row mt-5">
-      <div class="col-md-6 mx-auto">
-        <h3 class="text-center">Add</h3>
-        <form class="text-center mx-auto" @submit.prevent="addNewEvent">
-          <div class="form-group">
-            <label for="eventName" class="form-label">Event Name</label>
-            <input type="text" class="form-control" v-model="newEvent.eventName" required />
-          </div>
-          <div class="form-group">
-            <label for="lat" class="form-label">Latitude</label>
-            <input type="text" class="form-control" v-model="newEvent.lat" required />
-          </div>
-          <div class="form-group">
-            <label for="long" class="form-label">Longtitude</label>
-            <input type="text" class="form-control" v-model="newEvent.long" required />
-          </div>
-          <div class="mb-3">
-            <label for="timeStampStart" class="form-label"><b>Start Time</b></label>
-            <input type="datetime-local" class="form-control" id="timeStampStart" v-model="newEvent.timeStampStart" />
-          </div>
-          <div class="mb-3">
-            <label for="timeStampEnd" class="form-label"><b>End Time</b></label>
-            <input type="datetime-local" class="form-control" id="timeStampEnd" v-model="newEvent.timeStampEnd" />
-          </div>
-
-          <button type="submit" class="btn btn-success mx-2 my-2">
-            <i class="fa-solid fa-check" style="color: #ffffff;"></i>
-          </button>
-          <button type="button" class="btn btn-danger" @click="closeForm">
-            <i class="fa-solid fa-ban" style="color: #ffffff;"></i>
-          </button>
-        </form>
+      <div class="table-responsive mt-3">
+        <table class="table table-striped text-center custom-table">
+          <thead>
+            <tr>
+              <th>Event Name</th>
+              <th>Location</th>
+              <th>Starts</th>
+              <th>Finishes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="event in events" :key="event.id">
+              <td v-if="selectedEvent !== event">{{ event.eventName }}</td>
+              <td v-else>
+                <input type="text" class="form-control" v-model="selectedEvent.eventName" />
+              </td>
+              <td v-if="selectedEvent !== event">{{ event.location }}</td>
+              <td v-else>
+                <input type="text" class="form-control" v-model="selectedEvent.location" />
+              </td>
+              <td v-if="selectedEvent !== event">{{ formatDate(event.timeStampStart) }}</td>
+              <td v-else>
+                <input type="datetime-local" class="form-control" v-model="selectedEvent.timeStampStart" />
+              </td>
+              <td v-if="selectedEvent !== event">{{ formatDate(event.timeStampEnd) }}</td>
+              <td v-else>
+                <input type="datetime-local" class="form-control" v-model="selectedEvent.timeStampEnd" />
+              </td>
+              <td>
+                <div v-if="selectedEvent !== event">
+                  <button class="btn btn-sm btn-primary mx-2" @click="editEvent(event)">
+                    <i class="fa-solid fa-pen" style="color: #ffffff;"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger mt-2" @click="deleteEvent(event.id)">
+                    <i class="fa-solid fa-trash" style="color: #ffffff;"></i>
+                  </button>
+                </div>
+                <div v-else>
+                  <button class="btn btn-sm btn-success mx-2" @click="updateEvent">
+                    <i class="fa-solid fa-check" style="color: #ffffff;"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" @click="cancelEditEvent">
+                    <i class="fa-solid fa-ban" style="color: #ffffff;"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </template>
   
 <script>
-import SidebarComponent from '../components/SidebarComponent.vue';
-import TopbarComponent from '../components/TopbarComponent.vue';
 import { mapGetters } from 'vuex';
 import { getAuth } from 'firebase/auth'
 import { getFirestore, collection, doc, deleteDoc, getDocs, getDoc, GeoPoint, Timestamp, setDoc, updateDoc } from 'firebase/firestore';
@@ -133,11 +97,6 @@ import { getFirestore, collection, doc, deleteDoc, getDocs, getDoc, GeoPoint, Ti
 
 export default {
   name: "EventsCrud",
-
-  components: {
-    TopbarComponent,
-    SidebarComponent,
-  },
 
   computed: {
     //store
@@ -165,9 +124,45 @@ export default {
   },
 
   methods: {
-    toggleSidebar(collapsed) {
-      this.sidebarCollapsed = collapsed;
+
+    // Convert a JavaScript Date object to a Firestore Timestamp
+    toFirestoreTimestamp(date) {
+      return Timestamp.fromDate(date);
     },
+
+    // Convert a Firestore Timestamp to a JavaScript Date object
+    fromFirestoreTimestamp(timestamp) {
+      return timestamp.toDate();
+    },
+
+    formatDate(timestamp) {
+      // Check if timestamp is a Firestore Timestamp
+      if (timestamp instanceof Timestamp) {
+        // Convert Firestore timestamp to JavaScript Date
+        let dateObj = timestamp.toDate();
+
+        // Get the date components
+        let day = dateObj.getDate();
+        let month = dateObj.getMonth() + 1;
+        let year = dateObj.getFullYear();
+
+        // Get the time components
+        let hours = dateObj.getHours();
+        let minutes = dateObj.getMinutes();
+
+        // Format the date and time strings
+        let formattedDate = `${day}/${month}/${year}`;
+        let formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+
+        return `${formattedDate} ${formattedTime}`;
+      } else {
+        // If it's already a valid Date object, simply format it
+        let dateObj = new Date(timestamp);
+        let formattedDate = dateObj.toLocaleString();
+        return formattedDate;
+      }
+    },
+
     // getting data
     async fetchEvent() {
 
@@ -176,9 +171,12 @@ export default {
 
       try {
         const querySnapshot = await getDocs(eventsRef);
-        this.events = querySnapshot.docs.map(doc => ({
+        this.events = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
+          // Convert the Firestore Timestamps to JavaScript Date objects
+          timeStampStart: this.fromFirestoreTimestamp(doc.data().timeStampStart),
+          timeStampEnd: this.fromFirestoreTimestamp(doc.data().timeStampEnd),
         }));
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -199,7 +197,7 @@ export default {
         console.error('Error deleting event:', error);
       }
 
-      this.fetchEvents();
+      this.fetchEvent();
     },
     // edit event method for the form
     editEvent(event) {
@@ -217,13 +215,17 @@ export default {
     // updates database
     async updateUser() {
       const db = getFirestore();
-      const { id, ...eventData } = this.selectedEvent;
-      const eventRef = doc(db, 'events', id);
 
       try {
+        const { id, ...eventData } = this.selectedEvent;
+        const eventRef = doc(db, 'events', id);
+
+        // Convert the date fields to Firestore Timestamps before updating
+        eventData.timeStampStart = this.toFirestoreTimestamp(new Date(eventData.timeStampStart));
+        eventData.timeStampEnd = this.toFirestoreTimestamp(new Date(eventData.timeStampEnd));
+
         await updateDoc(eventRef, eventData);
-        console.log('Event updated successfully!');
-        this.selectedEvent = null;
+
       } catch (error) {
         console.error('Error updating Event:', error);
       }
@@ -231,86 +233,136 @@ export default {
       this.fetchEvent();
     },
 
-    formatDateTime(date) {
-      return date.toDate();
-    },
-
-
-    openForm() {
-      this.showForm = true;
-    },
-
-    closeForm() {
-      this.showForm = false;
-
-      this.newEvent = {
-        eventName: '',
-        lat: '',
-        long: '',
-        timeStampStart: '',
-        timeStampEnd: '',
-
-      }
-    },
-
-    // edding event method to database
-    addNewEvent() {
-      const db = getFirestore();
-      const eventsCollection = collection(db, 'events');
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
-
-      try {
-        const userCollection = collection(db, 'users');
-        const userDocRef = doc(userCollection, currentUser.uid);
-
-        getDoc(userDocRef).then((snapshot) => {
-          if (snapshot.exists()) {
-            const user = snapshot.data();
-            console.log(user.groupId);
-
-            const newEvent = {
-              eventName: this.newEvent.eventName,
-              groupId: user.groupId,
-              location: new GeoPoint(Number(this.newEvent.lat), Number(this.newEvent.long)),
-              timeStampStart: Timestamp.fromDate(new Date(this.newEvent.timeStampStart)),
-              timeStampEnd: Timestamp.fromDate(new Date(this.newEvent.timeStampEnd)),
-            };
-
-            setDoc(doc(eventsCollection), newEvent);
-
-            this.newEvent.eventName = '';
-            this.newEvent.lat = '';
-            this.newEvent.long = '';
-            this.newEvent.timeStampStart = '';
-            this.newEvent.timeStampEnd = '';
-          } else {
-            console.log('User not found');
-          }
-        });
-      } catch (error) {
-        console.error('Error', error);
-      }
-    },
   },
+
+  // edding event method to database
+  addNewEvent() {
+    const db = getFirestore();
+    const eventsCollection = collection(db, 'events');
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    try {
+      const userCollection = collection(db, 'users');
+      const userDocRef = doc(userCollection, currentUser.uid);
+
+      getDoc(userDocRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const user = snapshot.data();
+          console.log(user.groupId);
+
+          const newEvent = {
+            eventName: this.newEvent.eventName,
+            groupId: user.groupId,
+            location: new GeoPoint(Number(this.newEvent.lat), Number(this.newEvent.long)),
+            timeStampStart: this.toFirestoreTimestamp(new Date(this.newEvent.timeStampStart)),
+            timeStampEnd: this.toFirestoreTimestamp(new Date(this.newEvent.timeStampEnd)),
+          };
+
+          setDoc(doc(eventsCollection), newEvent);
+
+          this.newEvent.eventName = '';
+          this.newEvent.lat = '';
+          this.newEvent.long = '';
+          this.newEvent.timeStampStart = '';
+          this.newEvent.timeStampEnd = '';
+        } else {
+          console.log('User not found');
+        }
+      });
+    } catch (error) {
+      console.error('Error', error);
+    }
+  },
+
 
   created() {
 
     this.fetchEvent();
   }
+
 }
 </script>
 
 <style scoped>
-.list-group-item {
-
-  background-color: orange;
-  border-radius: 15px;
-
-
+/* Table styles */
+.custom-table {
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.eventForm {
+.custom-table th {
+  background-color: #17a2b8;
+  color: #fff;
+}
 
-  position: relative;
-}</style>
+.custom-table tbody tr:hover {
+  background-color: #e0e0e0;
+}
+
+/* Button styles */
+.btn {
+  cursor: pointer;
+}
+
+/* Container styles */
+.container {
+  max-width: 800px;
+  padding-bottom: 80px;
+}
+
+/* Input styles */
+.input-group {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.input-group input {
+  border-radius: 0;
+}
+
+.input-group button {
+  border-radius: 0;
+}
+
+/* Form styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  font-weight: bold;
+}
+
+.form-control {
+  border-radius: 0;
+}
+
+/* Responsive styles */
+@media (max-width: 576px) {
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+</style>

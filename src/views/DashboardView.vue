@@ -1,79 +1,61 @@
 <template>
-  <div>
-    <!--admin only view-->
-    <div v-if="isAdmin">
-      <TopbarComponent v-if="isAdmin" :firstName="firstName" :lastName="lastName"
-        @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
-      <SidebarComponent v-if="isAdmin" :isManager="isManager" :sidebarCollapsed="sidebarCollapsed"
-        class="flex-shrink-0" />
-      <div
-        class="admin-container container-fluid mt-5 d-flex flex-column min-vh-100 justify-content-center align-items-center">
-        <h1 class="text-center my-3">Access Database</h1>
-        <div class="row justify-content-center">
-          <div class="col-sm-3">
-            <div class="card mb-4">
-              <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                <i class="icon fa-solid fa-users fa-2xl my-3"></i>
-                <h4 class="card-title my-3">User's</h4>
-                <span>
-                  <a href="/userscrud">
-                    <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye"
-                        style="color: #ffffff;"></i></button>
-                  </a>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-3">
-            <div class="card">
-              <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                <i class="icon fa-solid fa-calendar-days fa-2xl my-3"></i>
-                <h4 class="card-title my-3">Event's</h4>
-                <span>
-                  <a href="/eventscrud">
-                    <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye"
-                        style="color: #ffffff;"></i></button>
-                  </a>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-3">
-            <div class="card">
-              <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                <i class="icon fa-solid fa-people-group fa-2xl my-3"></i>
-                <h4 class="card-title my-3">Group's</h4>
-                <span>
-                  <a href="/groupscrud">
-                    <button class="btn btn-sm btn-primary"><i class="fa-solid fa-eye"
-                        style="color: #ffffff;"></i></button>
-                  </a>
-                </span>
-              </div>
-            </div>
+  <div v-if="!isAdmin">
+    <div class="dashboard">
+      <h2>Upcoming Schedule <i class="fas fa-regular fa-calendar"></i></h2>
+      <hr>
+      <div class="event-list pt-3">
+        <div v-for="(eventsOfDay, day) in eventsByDay" :key="day" class="day-segment">
+          <div class="date-segment">{{ day }}</div>
+          <div v-for="event in eventsOfDay" :key="event.id" class="event-item mb-5">
+            <h2 class="my-3">{{ event.eventName }}</h2>
+            <a :href="event.location" target="_blank" class="location-btn"><i class="fas fa-solid fa-map-pin"></i> View
+              Location</a>
+            <p><strong><i class="fas fa-regular fa-clock"></i> Time:</strong> {{ formatTime(event.timeStampStart) }} - {{
+              formatTime(event.timeStampEnd) }}</p>
           </div>
         </div>
       </div>
     </div>
-    <div v-else>
-      <TopbarComponent :firstName="firstName" :lastName="lastName"
-        @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed" />
-      <div class="wrapper d-flex flex-row flex-md-nowrap">
-        <SidebarComponent :isManager="isManager" :sidebarCollapsed="sidebarCollapsed" class="flex-shrink-0" />
-        <div class="container-fluid mt-5 mt-md-0">
-          <h1 class="text-center pt-5 my-4">{{ firstName }}'s Calendar View</h1>
-          <div id="calendar">
-          </div>
-          <div class="modal" v-if="selectedEvent">
-            <div class="modal-content text-center text-white">
-              <span class="close" @click="closeModal">&times;</span>
-              <h2>Event Details</h2>
-              <p><strong>Title:</strong> {{ selectedEvent.title }}</p>
-              <p><strong>Start:</strong> {{ selectedEvent.start }}</p>
-              <p><strong>End:</strong> {{ selectedEvent.end }}</p>
-              <p><strong>Location:</strong> {{ selectedEvent.location }}</p>
-            </div>
-          </div>
+  </div>
+  <div v-else class="admin-dashboard">
+    <h1 class="text-center my-3">Admin Dashboard</h1>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">
+          <i class="icon fa-solid fa-users fa-2x"></i>
+        </div>
+        <div class="card-body">
+          <h4 class="card-title">Users</h4>
+          <a href="/userscrud" class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-eye" style="color: #ffffff;"></i>
+            View
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">
+          <i class="icon fa-solid fa-calendar-days fa-2x"></i>
+        </div>
+        <div class="card-body">
+          <h4 class="card-title">Events</h4>
+          <a href="/eventscrud" class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-eye" style="color: #ffffff;"></i>
+            View
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">
+          <i class="icon fa-solid fa-people-group fa-2x"></i>
+        </div>
+        <div class="card-body">
+          <h4 class="card-title">Groups</h4>
+          <a href="/groupscrud" class="btn btn-sm btn-primary">
+            <i class="fa-solid fa-eye" style="color: #ffffff;"></i>
+            View
+          </a>
         </div>
       </div>
     </div>
@@ -81,449 +63,243 @@
 </template>
 
 
+
 <script>
-
-// imports
-import SidebarComponent from '../components/SidebarComponent.vue';
-import TopbarComponent from '../components/TopbarComponent.vue';
-import { Calendar } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import { mapState } from 'vuex'
+import { getFirestore, collection, where, orderBy, onSnapshot, query, getDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, where, query } from 'firebase/firestore';
-import axios from 'axios';
-
-
 export default {
-  name: "DashboardView",
-
-  // bringing in components
-  components: {
-    TopbarComponent,
-    SidebarComponent,
-
-  },
-
   data() {
     return {
-      sidebarCollapsed: false,
-      events: [],
-      firstName: "",
-      lastName: "",
-      isManager: false,
-      isAdmin: false,
-      selectedEvent: null,
+      events: []
 
     };
   },
   computed: {
-    // ternary operator if true/false
-    sidebarWidth() {
-      return this.sidebarCollapsed ? "0" : "250px";
+    eventsByDay() {
+      let eventsSorted = [...this.events].sort((a, b) => a.timeStampStart.seconds - b.timeStampStart.seconds);
+
+      return eventsSorted.reduce((acc, event) => {
+        // Converting Firestore timestamp to JavaScript Date
+        let dateObj = new Date(event.timeStampStart.seconds * 1000);
+        let dateKey = `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+
+        (acc[dateKey] = acc[dateKey] || []).push(event);
+
+        return acc;
+      }, {});
     },
+
+    ...mapState({
+      userData: (state) => state.userData,
+    }),
+
+    isManager() {
+      return this.$store.state.userData.isManager;
+
+    },
+
+    isAdmin() {
+      return this.$store.state.userData.isAdmin;
+    },
+  },
+
+  isAdmin() {
+    return this.$store.state.userData.isAdmin;
   },
 
   methods: {
-    toggleSidebar(collapsed) {
-      this.sidebarCollapsed = collapsed;
+    fetchUserData() {
+      this.$store.dispatch('fetchUserData');
     },
 
-    closeModal() {
-      this.selectedEvent = null;
-    },
 
-    formatDate(date) {
+    async fetchEventsFromFirestore() {
+      const db = getFirestore();
+      const auth = getAuth();
+      const userDocRef = doc(db, "users", auth.currentUser.uid);
 
-      const options = {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
+      // Get the user document
+      const userDocSnap = await getDoc(userDocRef);
+      if (!userDocSnap.exists()) {
+        console.error("User not found!");
+        return;
       }
 
-      return new Date(date).toLocaleString('en-UK', options)
-    },
-    // for user to see event info formatted nicer
-    async handleEventClick(eventInfo) {
-      const apiKey = '482c2d29fb6a4cdbb046f187833039b5';
-      const clickedEvent = eventInfo.event;
+      const userGroupID = userDocSnap.data().groupId;
 
-      try {
-        const response = await axios.get(
-          `https://api.geoapify.com/v1/geocode/reverse?lat=${clickedEvent.extendedProps.location.latitude}&lon=${clickedEvent.extendedProps.location.longitude}&apiKey=${apiKey}`
-        );
-        const result = response.data;
-        if (result.features.length) {
-          const locationFormatted = result.features[0].properties.formatted;
+      let eventsQuery;
 
-          this.selectedEvent = {
-            title: clickedEvent.title,
-            start: this.formatDate(clickedEvent.start),
-            end: this.formatDate(clickedEvent.end),
-            location: locationFormatted,
-          };
-        } else {
-          console.log('No address found');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    },
-
-    // console.log('clicked')
-  },
-  // vue lifecycle hook - used for fullcalendar
-  mounted() {
-    const db = getFirestore();
-    const auth = getAuth();
-    const userCollection = collection(db, "users");
-    const userDocRef = doc(userCollection, auth.currentUser.uid);
-    const calendarEl = document.getElementById("calendar");
-
-    if (!calendarEl) {
-      console.error("Calendar element not found");
-      return;
-    }
-
-    const calendar = new Calendar(calendarEl, {
-      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-      timeZone: 'local',
-      initialView: "dayGridMonth",
-      nowIndicator: true,
-      selectable: true,
-      views: {
-        timeGridFourDay: {
-          type: 'timeGrid',
-          duration: { days: 4 }
-        },
-      },
-      headerToolbar: {
-        left: "prev,next,today",
-        center: "title",
-        right: "timeGridWeek,timeGridDay"
-      },
-      events: this.events,
-
-      eventClick: this.handleEventClick,
-    });
-
-    calendar.render();
-    // for event pulling onto full calander
-    onSnapshot(userDocRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const user = snapshot.data();
-        this.firstName = user.firstName;
-        this.lastName = user.lastName;
-        this.isAdmin = user.role === "admin";
-        this.isManager = user.role === "manager";
-
-        const eventsCollection = collection(db, "events");
-        let groupQuery;
-
-        if (this.isAdmin) {
-          groupQuery = eventsCollection
-        } else {
-          groupQuery = query(eventsCollection, where("groupId", "==", user.groupId));
-        }
-
-        onSnapshot(groupQuery, (snapshot) => {
-          const events = snapshot.docs.map((event) => {
-            const eventData = event.data();
-            // toDate() causing error without this as problem adding timeStamp on manager
-            if (!eventData.timeStampStart || !eventData.timeStampEnd) {
-              console.warn("Event data does not have a valid timeStamp field:", eventData);
-              return null;
-            }
-            return {
-              title: eventData.eventName,
-              start: eventData.timeStampStart.toDate(),
-              end: eventData.timeStampEnd.toDate(),
-              extendedProps: { location: eventData.location, },
-              groupId: eventData.groupId,
-            };
-          });
-          this.events = events.filter(Boolean);
-          // console.log(events)
-          calendar.setOption("events", this.events);
-        });
+      if (this.isAdmin) {
+        eventsQuery = collection(db, 'events'); // Fetch all events if admin (stops errors also)
       } else {
-        console.log("User Document does not exist");
+        // Construct the query for events with the user's groupId
+        eventsQuery = query(
+          collection(db, 'events'),
+          where('groupId', '==', userGroupID),
+          orderBy('timeStampStart')
+        );
       }
-    });
-  },
-}
 
+      this.unsubscribeFromFirestore = onSnapshot(eventsQuery, snapshot => {
+        let eventsArray = [];
+        snapshot.forEach(doc => {
+          let data = doc.data();
+          data.id = doc.id;
+          eventsArray.push(data);
+        });
+        this.events = eventsArray;
+      });
+
+    },
+
+    formatDate(timestamp) {
+      // Convert Firestore timestamp to JavaScript Date
+      let dateObj = new Date(timestamp.seconds * 1000);  
+      return `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+    },
+
+    formatTime(timestamp) { 
+      // Convert Firestore timestamp to JavaScript Date
+      let dateObj = new Date(timestamp.seconds * 1000); 
+      let hours = dateObj.getHours();
+      let minutes = ("0" + dateObj.getMinutes()).slice(-2);
+      return `${hours}:${minutes}`;
+    },
+  },
+
+  created() {
+    this.fetchUserData();
+    this.fetchEventsFromFirestore();
+  },
+  unmounted() {
+    // Important: Unsubscribe from Firestore updates when component is destroyed
+    if (this.unsubscribeFromFirestore) {
+      this.unsubscribeFromFirestore();
+    }
+  }
+
+};
 
 </script>
 
 <style scoped>
-.topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 60px;
-  background-color: #1d546f;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  z-index: 100;
+.dashboard {
+  padding: 3rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.logo {
-  width: 60px;
-  margin: 10px;
-  padding: 0 15px;
-  border-right: 1px solid #f5f5f5;
+h1 {
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: #040404;
 }
 
-.topbar .menu {
-  padding: 0 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.topbar .hamburger {
-  cursor: pointer;
-  font-size: 20px;
-  color: white;
-}
-
-.topbar .hamburger:hover {
-  color: #007dc3;
-}
-
-.sidebar {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  height: 100%;
-  height: calc(100% - 60px);
-  background-color: #039be5;
-  transition: width 0.2s;
-  overflow-y: auto;
-  width: 250px;
-  z-index: 101;
-}
-
-.sidebar_container {
+.event-list {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  gap: 2rem;
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+.date-segment {
 
-.sidebar ul li a {
-  display: block;
-  padding: 20px;
-  border-bottom: 1px solid black;
-  text-decoration: none;
-  color: white;
-  transition: background 0.3s;
-}
-
-.sidebar ul li a .icon {
-  font-size: 18px;
-  color: white;
-  vertical-align: middle;
-}
-
-.sidebar ul li a .text {
-  margin-left: 10px;
-  color: white;
-  font-family: sans-serif;
-  font-size: 16px;
-}
-
-.sidebar ul li a:hover {
-  background: navy;
-}
-
-.logout {
-  margin-top: auto;
-}
-
-.logout a {
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  text-decoration: none;
-  color: white;
-  transition: background-color 0.3s;
-}
-
-.logout a:hover {
-  background-color: navy;
-}
-
-.logout a .icon {
-  font-size: 18px;
-  color: white;
-}
-
-.logout a .text {
-  margin-left: 10px;
-  color: white;
-  font-family: sans-serif;
-  font-size: 16px;
-}
-
-.container {
-  margin-top: 60px;
-  padding: 20px;
-}
-
-
-
-/*Calendar-styling */
-/* Calendar container */
-#calendar {
-  background-color: #ffffff;
-}
-
-/* Calendar header */
-.fc-header-toolbar {
-  background-color: #1d546f;
-  color: #fff;
-  padding: 10px;
-}
-
-.fc-header-toolbar .fc-button {
-  background-color: #007dc3 !important;
-  border-color: #000000 !important;
-  color: #fff;
-  font-weight: bold;
-  margin: 0 5px;
-}
-
-.fc-header-toolbar .fc-button:hover {
-  background-color: black !important;
-}
-
-/* Calendar views */
-.fc-view {
-  border-radius: 10px;
-  background-color: #ffffff;
-  padding: 10px;
-}
-
-/* Time slots */
-.fc-timegrid-slot-label {
-  font-weight: bold;
-}
-
-/* Event styles */
-.fc-event {
-  background-color: #d3a202;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  padding: 5px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.fc-event:hover {
-  background-color: #0d97d2;
-}
-
-.userProfile {
-  color: white;
-  font-family: sans-serif;
-  font-size: 16px;
-}
-
-.userProfile:hover {
-  color: rgb(24, 124, 216);
-}
-
-.event-details {
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #007dc3;
+  background-color: #2da829;
+  /* Lime green color */
+  color: #ffffff;
+  padding: 0.75rem;
   border-radius: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  float: left;
 }
 
-.event-details h2 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: white;
-  text-decoration: solid;
-
+.event-item {
+  background-color: #d6d6d6;
+  padding: 40px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s, box-shadow 0.25s;
+  margin-top: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.event-details p {
-  font-size: 16px;
-  margin-bottom: 5px;
-  color: white;
-
+.event-item:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
 }
 
-.event-details i {
-  font-size: 50px;
-  color: white;
+@media (min-width: 768px) {
+  .dashboard {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 20px;
+  }
 }
 
-.admin-container {
-  padding-top: 60px;
+h2 {
+  font-weight: 500;
+  color: #040504;
+  margin-bottom: 1.25rem;
+}
 
+p {
+  margin-bottom: 0.75rem;
+  color: #060606;
+}
+
+.admin-dashboard {
+  padding: 4rem;
+}
+
+.card-grid {
+  margin-top: 50px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
 }
 
 .card {
-  margin: 50px;
-  padding: 80px;
-
+  background-color: #ffffff;
+  color: #020202;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(19, 227, 12, 0.06);
+  /* Lime green shadow */
+  transition: transform 0.25s;
 }
 
-.icon {
-  font-size: 36px;
+.card:hover {
+  transform: translateY(-2px);
+  background-color: #1e8e20;
 }
 
-
-.btn {
-  margin-top: 20px;
-  font-size: 20px;
-  width: 70px;
+.card-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
-.modal {
-  display: block;
-  position: fixed;
-  z-index: 9999;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+.card-title {
+  font-weight: 500;
+  color: #030303;
+  margin-bottom: 1.25rem;
 }
 
-.modal-content {
-  background-color: #039be5;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 500px;
-  border-radius: 10px;
-
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer;
+.card-body .btn {
+  margin-top: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  background-color: #17a012;
+  /* Lime green button */
+  color: #f7f9fc;
+  transition: background-color 0.25s;
 }
-</style>
+
+.card-body .btn:hover {
+  background-color: #131b13;
+}</style>

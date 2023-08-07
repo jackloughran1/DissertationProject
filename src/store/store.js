@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 import { getFirestore, doc, getDoc, collection } from 'firebase/firestore';
 import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth';
-
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 // defining state of userData and auth token, auth token used for persistence
 const store = createStore({
   state: {
@@ -10,7 +10,7 @@ const store = createStore({
       lastName: '',
       isManager: false,
       isAdmin: false,
-      
+      profilePhotoUrl: '',
     },
     authToken: '',
   },
@@ -33,13 +33,10 @@ const store = createStore({
 
 // userData method
 async fetchUserData({ commit }) {
-
-  console.log('Called')
   const auth = getAuth();
   const user = auth.currentUser;
 
   if (!user) {
-    
     return;
   }
   const db = getFirestore();
@@ -51,14 +48,35 @@ async fetchUserData({ commit }) {
     if (snapshot.exists()) {
       const userData = snapshot.data();
 
-     
-      
+      // Fetch the profile photo URL from Firebase Storage
+      const storage = getStorage();
+      let profilePhotoUrl = '';
+
+      // Attempt to fetch JPEG profile photo
+      try {
+        const profilePhotoRef = ref(storage, `profile_photos/${user.uid}.jpg`);
+        profilePhotoUrl = await getDownloadURL(profilePhotoRef);
+      } catch (error) {
+        console.error('Error fetching JPEG profile photo URL:', error);
+      }
+
+      // If JPEG profile photo not found, attempt to fetch JFIF profile photo
+      if (!profilePhotoUrl) {
+        try {
+          const profilePhotoRef = ref(storage, `profile_photos/${user.uid}.jfif`);
+          profilePhotoUrl = await getDownloadURL(profilePhotoRef);
+        } catch (error) {
+          console.error('Error fetching JFIF profile photo URL:', error);
+        }
+      }
+
       commit('setUserData', {
         firstName: userData.firstName,
         lastName: userData.lastName,
         userRole: userData.role,
         isAdmin: userData.role ==='admin',
         isManager: userData.role === 'manager',
+        profilePhotoUrl,
       });
     } else {
       console.error('User document is not found');
@@ -66,9 +84,8 @@ async fetchUserData({ commit }) {
   } catch (error) {
     console.error('Error fetching user data:', error);
   }
-
-
 },
+
     async setAuthToken({ commit }, authToken) {
       commit('setAuthToken', authToken);
 

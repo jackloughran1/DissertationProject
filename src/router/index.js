@@ -35,12 +35,12 @@ const routes = [
   },
   {
     path: '/signup',
-    name: 'SignUp',
+    name: 'signup',
     component: SignUpView,
   },
   {
     path: '/login',
-    name: 'Login',
+    name: 'login',
     component: LoginView,
   },
   {
